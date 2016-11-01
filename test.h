@@ -190,6 +190,7 @@ unsigned long page_of(void *ptr);
 ulong correct_tsc(ulong el_org);
 void bit_fade_fill(unsigned long n, int cpu);
 void bit_fade_chk(unsigned long n, int cpu);
+void latency_analysis();
 void rowhammer(int row_max, int *row_cnt, int toggle_max, int cpu);
 void find_ticks_for_pass(void);
 void beep(unsigned int frequency);

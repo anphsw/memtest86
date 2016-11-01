@@ -8,7 +8,7 @@
  * Released under version 2 of the Gnu Public License.
  * By Chris Brady
  */
- 
+
 #include "stdint.h"
 #include "stddef.h"
 #include "test.h"
@@ -63,7 +63,8 @@ struct tseq tseq[] = {
 	{1, 32,  9,  48, 0, "[Random number sequence]               "},
 	{1, 32, 10,   6, 0, "[Modulo 20, Random pattern]            "},
 	{1,  1, 11, 240, 0, "[Bit fade test, 2 patterns]            "},
-	{1,  1, 12,   1, 0, "[RowHammer]                            "},
+    {1,  1, 12,   1, 0, "[Memory Latency Analysis]              "},
+	{1,  1, 13,   1, 0, "[RowHammer]                            "},
 	{1,  0,  0,   0, 0, NULL}
 };
 
@@ -579,9 +580,9 @@ void test_start(void)
 			window = 1;
 		}
 
-		/* For the RowHammer test, #12, we cannot relocate so bump the
+		/* For the RowHammer test, #13, we cannot relocate so bump the
 		 * window to 1 */
-		if (tseq[test].pat == 12 && window == 0) {
+		if (tseq[test].pat == 13 && window == 0) {
 			window = 1;
 		}
 
@@ -738,8 +739,8 @@ void test_start(void)
 		bitf_seq = 0;
 	    }
 
-	    /* Special handling for the RowHammer test #12 */
-	    if (tseq[test].pat == 12 && rowhammer_seq != 6) {
+	    /* Special handling for the RowHammer test #13 */
+	    if (tseq[test].pat == 13 && rowhammer_seq != 6) {
 		/* Keep going until the sequence is complete. */
 		rowhammer_seq++;
 		continue;
@@ -1056,7 +1057,12 @@ int do_test(int my_ord)
 		BAILOUT;
 		break;
 
-        case 12: /* RowHammer */
+        case 12: /* Memory Latency Analysis */
+            latency_analysis();
+            // Remove this break to perform the rowhammer attack
+            break;
+
+        case 13: /* RowHammer */
             switch (rowhammer_seq) {
                 case 0:
                     row_cnt = 0;
@@ -1120,7 +1126,7 @@ int do_test(int my_ord)
 }
 
 /* Compute number of SPINSZ chunks being tested */
-int find_chunks(int tst) 
+int find_chunks(int tst)
 {
 	int i, j, sg, wmax, ch;
 	struct pmap twin={0,0};
@@ -1131,7 +1137,7 @@ int find_chunks(int tst)
 	/* Compute the number of SPINSZ memory segments */
 	ch = 0;
 
-        if (tst == 11 || test == 12) j = 1;  // don't count chunks in 0th window
+        if (tst == 11 || test == 12 || test == 13) j = 1;  // don't count chunks in 0th window
         else j = 0;
 
 	for(; j < wmax; j++) {
@@ -1254,7 +1260,10 @@ static int find_ticks_for_test(int tst)
 	case 11: /* Bit fade test */
 		ticks = c * 2 + 4 * ch;
 		break;
-	case 12: /* RowHammer */
+	case 12: /* Memory Latency Analysis */
+		ticks = (4 * ch) + (2 * row_max);
+		break;
+    case 13: /* RowHammer */
 		ticks = (4 * ch) + (2 * row_max);
 		break;
 	case 90: /* Modulo 20 check, all ones and zeros (unused) */
@@ -1267,7 +1276,7 @@ static int find_ticks_for_test(int tst)
 	if (cpu_mode == CPM_SEQ || tseq[tst].cpu_sel == -1) {
 		ticks *= act_cpus;
 	}
-	if (tseq[tst].pat == 7 || tseq[tst].pat == 11 || tseq[tst].pat == 12) {
+	if (tseq[tst].pat == 7 || tseq[tst].pat == 11 || tseq[tst].pat == 12 || tseq[tst].pat == 13) {
 		return ticks;
 	}
 	return ticks*ch;

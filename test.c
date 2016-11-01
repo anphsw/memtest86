@@ -1555,6 +1555,11 @@ void sleep(long n, int flag, int me, int sms)
 }
 
 
+void latency_analysis()
+{
+    BAILR
+}
+
 /* RowHammer */
 void rowhammer(int row_max, int *row_cnt, int toggle_max, int me)
 {
@@ -1566,6 +1571,7 @@ void rowhammer(int row_max, int *row_cnt, int toggle_max, int me)
         uintptr_t end = (uintptr_t) v->map[s].end;
 
         uintptr_t size = end - start;
+        // [TODO] Offset is greater thant bank size, why?
         uintptr_t offset = (size / 2) & ~(BANK_ALIGN - 1);
         if (offset < BANK_ALIGN)
             continue;
@@ -1601,7 +1607,7 @@ void rowhammer(int row_max, int *row_cnt, int toggle_max, int me)
 
 void beep(unsigned int frequency)
 {
-	
+
 	unsigned int count = 1193180 / frequency;
 
 	// Switch on the speaker
