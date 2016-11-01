@@ -1554,31 +1554,65 @@ void sleep(long n, int flag, int me, int sms)
 	}
 }
 
+void measure(uintptr_t address, int iteration, double* mean, double* sigma) {
+    uint64_t start, end;
+    double K = 0, sum = 0, sumsq = 0;
+    double n = 100;
+
+    for (int i = 0; i < n; i++) {
+        // Measurement of uncached access time to address location
+        start = RDTSC();
+        *(volatile int *) address;
+        end = RDTSC();
+        asm volatile("clflush (%0)" : : "r" (address));
+
+        double value = (double)(end - start);
+
+        // Incremental mean and variance computation
+        if(i == 0) {
+            K = value;
+        }
+        sum += value - K;
+        sumsq += (value - K) * (value - K);
+    }
+
+    // We are writing the variance, cause we lack a square root implementation
+    mean[iteration] = K + sum / n;
+    sigma[iteration] = (sumsq - (sum * sum)/n) / (n - 1);
+}
+
 void latency_analysis()
 {
     uintptr_t step = 512;
 
-    // This is the segment I have to test
-    uintptr_t start = (uintptr_t) v->map[s].start;
-    uintptr_t end = (uintptr_t) v->map[s].end;
+    // Repeat for every segment to be tested
+    for (int s = 0; s < segs; s++) {
+        // This is the segment I have to test
+        uintptr_t start = (uintptr_t) v->map[s].start;
+        uintptr_t end = (uintptr_t) v->map[s].end;
+        uintptr_t size = end - start;
+        uintptr_t targets = size / step;
 
-    // Time will be measured in TSC ticks
+        // Data arrays
+        double time_1_mean[targets], time_2_mean[targets];
+        double time_1_sigma[targets], time_2_sigma[targets];
 
-    // Test loop
-    for (int i = 0; i < test_size; i+=step) {
-        //measure(base, i/step, time_1_mean, time_1_sigma);
-        //measure(base+i, i/step, time_2_mean, time_2_sigma);
+        // Test loop, time will be measured in TSC ticks
+        for (int i = 0; i < size; i+=step) {
+            measure(start, i/step, time_1_mean, time_1_sigma);
+            measure(start+i, i/step, time_2_mean, time_2_sigma);
+        }
+
+        // Write result to serial
+        for (int j=0; j<targets; j++) {
+            printf("%i,%f,%f,%f,%f\n", j*(int)step,
+                   time_1_mean[j], time_1_sigma[j],
+                   time_2_mean[j], time_2_sigma[j]);
+        }
+
+        // Tick the clock
+        BAILR
     }
-
-    // Write result to serial
-    //for (int j=0; j<iterations; j++) {
-    //    printf("%i,%f,%f,%f,%f\n", j*(int)step,
-    //           time_1_mean[j], time_1_sigma[j],
-    //           time_2_mean[j], time_2_sigma[j]);
-    //}
-
-    // Tick the clock
-    BAILR
 }
 
 /* RowHammer */

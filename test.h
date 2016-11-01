@@ -190,6 +190,7 @@ unsigned long page_of(void *ptr);
 ulong correct_tsc(ulong el_org);
 void bit_fade_fill(unsigned long n, int cpu);
 void bit_fade_chk(unsigned long n, int cpu);
+void measure(unsigned int address, int iteration, double* mean, double* stddev);
 void latency_analysis();
 void rowhammer(int row_max, int *row_cnt, int toggle_max, int cpu);
 void find_ticks_for_pass(void);
@@ -317,9 +318,6 @@ extern unsigned char _start[], _end[], startup_32[];
 extern unsigned char _size, _pages;
 
 extern struct mem_info_t mem_info;
-
-// ~256KB test area for latency analysis
-const int test_size = 1 << 18;
 
 #endif /* __ASSEMBLY__ */
 #endif /* _TEST_H_ */
