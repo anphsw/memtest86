@@ -318,5 +318,8 @@ extern unsigned char _size, _pages;
 
 extern struct mem_info_t mem_info;
 
+// ~256KB test area for latency analysis
+const int test_size = 1 << 18;
+
 #endif /* __ASSEMBLY__ */
 #endif /* _TEST_H_ */

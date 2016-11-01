@@ -1554,9 +1554,30 @@ void sleep(long n, int flag, int me, int sms)
 	}
 }
 
-
 void latency_analysis()
 {
+    uintptr_t step = 512;
+
+    // This is the segment I have to test
+    uintptr_t start = (uintptr_t) v->map[s].start;
+    uintptr_t end = (uintptr_t) v->map[s].end;
+
+    // Time will be measured in TSC ticks
+
+    // Test loop
+    for (int i = 0; i < test_size; i+=step) {
+        //measure(base, i/step, time_1_mean, time_1_sigma);
+        //measure(base+i, i/step, time_2_mean, time_2_sigma);
+    }
+
+    // Write result to serial
+    //for (int j=0; j<iterations; j++) {
+    //    printf("%i,%f,%f,%f,%f\n", j*(int)step,
+    //           time_1_mean[j], time_1_sigma[j],
+    //           time_2_mean[j], time_2_sigma[j]);
+    //}
+
+    // Tick the clock
     BAILR
 }
 
