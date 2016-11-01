@@ -1605,9 +1605,10 @@ void latency_analysis()
 
         // Write result to serial
         for (int j=0; j<targets; j++) {
-            printf("%i,%f,%f,%f,%f\n", j*(int)step,
-                   time_1_mean[j], time_1_sigma[j],
-                   time_2_mean[j], time_2_sigma[j]);
+            serial_echo_print("Output data!\n");
+            //printf("%i,%f,%f,%f,%f\n", j*(int)step,
+            //       time_1_mean[j], time_1_sigma[j],
+            //       time_2_mean[j], time_2_sigma[j]);
         }
 
         // Tick the clock
