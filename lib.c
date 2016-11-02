@@ -880,6 +880,25 @@ void serial_echo_print(const char *p)
 	}
 }
 
+void serial_echo_printd(const double value)
+{
+	if (!serial_cons) {
+		return;
+	}
+	/* Now, transfer each byte */
+    for(int i = 0; i < sizeof(double); i++) {
+        WAIT_FOR_XMITR;
+
+        char p = (char)*(&value+i);
+		/* Send the byte out. */
+		serial_echo_outb(p, UART_TX);
+		if(p == 10) {
+			WAIT_FOR_XMITR;
+			serial_echo_outb(13, UART_TX);
+		}
+    }
+}
+
 /* Except for multi-character key sequences this mapping
  * table is complete.  So it should not need to be updated
  * when new keys are searched for.  However the key handling

@@ -1554,7 +1554,7 @@ void sleep(long n, int flag, int me, int sms)
 	}
 }
 
-void measure(uintptr_t address, int iteration, double* mean, double* sigma) {
+void measure(uintptr_t address, int iteration, double *mean, double *sigma) {
     uint64_t start, end;
     double K = 0, sum = 0, sumsq = 0;
     double n = 100;
@@ -1577,41 +1577,52 @@ void measure(uintptr_t address, int iteration, double* mean, double* sigma) {
     }
 
     // We are writing the variance, cause we lack a square root implementation
-    mean[iteration] = K + sum / n;
-    sigma[iteration] = (sumsq - (sum * sum)/n) / (n - 1);
+    *mean = K + sum / n;
+    *sigma = (sumsq - (sum * sum)/n) / (n - 1);
 }
 
-void latency_analysis()
+char* print_serial(int step, double mean1, double sigma1,
+                   double mean2, double sigma2)
+{
+    serial_echo_print("Begin Sample Data:\n");
+    serial_echo_printd((double)step);
+    serial_echo_printd(mean1);
+    serial_echo_printd(sigma1);
+    serial_echo_printd(mean2);
+    serial_echo_printd(sigma2);
+    serial_echo_printd(mean1+
+                      sigma1+
+                      mean2+
+                      sigma2);
+    serial_echo_print("\n");
+}
+
+void latency_analysis(int me)
 {
     uintptr_t step = 512;
+    double time_1_mean, time_2_mean, time_1_sigma, time_2_sigma;
 
     // Repeat for every segment to be tested
-    for (int s = 0; s < segs; s++) {
-        // This is the segment I have to test
+    for (int s=0; s<segs; s++) {
         uintptr_t start = (uintptr_t) v->map[s].start;
         uintptr_t end = (uintptr_t) v->map[s].end;
         uintptr_t size = end - start;
         uintptr_t targets = size / step;
 
-        // Data arrays
-        double time_1_mean[targets], time_2_mean[targets];
-        double time_1_sigma[targets], time_2_sigma[targets];
-
         // Test loop, time will be measured in TSC ticks
         for (int i = 0; i < size; i+=step) {
-            measure(start, i/step, time_1_mean, time_1_sigma);
-            measure(start+i, i/step, time_2_mean, time_2_sigma);
-        }
+            measure(start, i/step, &time_1_mean, &time_1_sigma);
+            measure(start+i, i/step, &time_2_mean, &time_2_sigma);
 
-        // Write result to serial
-        for (int j=0; j<targets; j++) {
-            serial_echo_print("Output data!\n");
-            //printf("%i,%f,%f,%f,%f\n", j*(int)step,
-            //       time_1_mean[j], time_1_sigma[j],
-            //       time_2_mean[j], time_2_sigma[j]);
+            print_serial(i/step, time_1_mean, time_1_sigma,
+                         time_2_mean, time_2_sigma);
+
+            do_tick(me);
+            BAILR
         }
 
         // Tick the clock
+        do_tick(me);
         BAILR
     }
 }

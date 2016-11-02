@@ -580,6 +580,12 @@ void test_start(void)
 			window = 1;
 		}
 
+        /* For the memory latency analysis, #12, we cannot relocate so bump the
+		 * window to 1 */
+		if (tseq[test].pat == 12 && window == 0) {
+			window = 1;
+		}
+
 		/* For the RowHammer test, #13, we cannot relocate so bump the
 		 * window to 1 */
 		if (tseq[test].pat == 13 && window == 0) {
@@ -1058,7 +1064,7 @@ int do_test(int my_ord)
 		break;
 
         case 12: /* Memory Latency Analysis */
-            latency_analysis();
+            latency_analysis(my_ord);
             // Remove this break to perform the rowhammer attack
             break;
 
@@ -1260,7 +1266,7 @@ static int find_ticks_for_test(int tst)
 	case 11: /* Bit fade test */
 		ticks = c * 2 + 4 * ch;
 		break;
-	case 12: /* Memory Latency Analysis */
+	case 12: /* [TODO] fix this value Memory Latency Analysis */
 		ticks = (4 * ch) + (2 * row_max);
 		break;
     case 13: /* RowHammer */
