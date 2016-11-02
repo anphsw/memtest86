@@ -1617,13 +1617,13 @@ void latency_analysis(int me)
             print_serial(i/step, time_1_mean, time_1_sigma,
                          time_2_mean, time_2_sigma);
 
-            do_tick(me);
-            BAILR
         }
 
-        // Tick the clock
         do_tick(me);
         BAILR
+
+        // Test only one segment
+        break;
     }
 }
 

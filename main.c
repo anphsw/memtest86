@@ -1266,8 +1266,8 @@ static int find_ticks_for_test(int tst)
 	case 11: /* Bit fade test */
 		ticks = c * 2 + 4 * ch;
 		break;
-	case 12: /* [TODO] fix this value Memory Latency Analysis */
-		ticks = (4 * ch) + (2 * row_max);
+	case 12: /* Memory Latency Analysis [TODO] Fix this value */
+		ticks = ch;
 		break;
     case 13: /* RowHammer */
 		ticks = (4 * ch) + (2 * row_max);
