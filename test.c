@@ -1597,9 +1597,8 @@ char* print_serial(int step, double mean1, double sigma1,
     serial_echo_print("\n");
 }
 
-void latency_analysis(int me)
+void latency_analysis(uintptr_t test_size, uintptr_t step, int me)
 {
-    uintptr_t step = 512;
     double time_1_mean, time_2_mean, time_1_sigma, time_2_sigma;
 
     // Repeat for every segment to be tested
@@ -1607,23 +1606,21 @@ void latency_analysis(int me)
         uintptr_t start = (uintptr_t) v->map[s].start;
         uintptr_t end = (uintptr_t) v->map[s].end;
         uintptr_t size = end - start;
-        uintptr_t targets = size / step;
 
         // Test loop, time will be measured in TSC ticks
-        for (int i = 0; i < size; i+=step) {
+        for (int i = 0; i < test_size && i < size; i+=step) {
             measure(start, i/step, &time_1_mean, &time_1_sigma);
             measure(start+i, i/step, &time_2_mean, &time_2_sigma);
 
             print_serial(i/step, time_1_mean, time_1_sigma,
                          time_2_mean, time_2_sigma);
 
+            do_tick(me);
+            BAILR
         }
 
-        do_tick(me);
-        BAILR
-
-        // Test only one segment
-        break;
+        test_size -= size;
+        if(test_size <= 0) break;
     }
 }
 

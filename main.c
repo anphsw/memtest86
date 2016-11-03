@@ -64,7 +64,7 @@ struct tseq tseq[] = {
 	{1, 32, 10,   6, 0, "[Modulo 20, Random pattern]            "},
 	{1,  1, 11, 240, 0, "[Bit fade test, 2 patterns]            "},
     {1,  1, 12,   1, 0, "[Memory Latency Analysis]              "},
-	{1,  1, 13,   1, 0, "[RowHammer]                            "},
+	{0,  1, 13,   1, 0, "[RowHammer]                            "},
 	{1,  0,  0,   0, 0, NULL}
 };
 
@@ -72,6 +72,9 @@ static const int row_max = 1000;       // RowHammer: number of row-pairs to test
 static int row_cnt = 0;                // RowHammer: number of row-pairs tested so far
 static const int toggle_max = 2600000; // RowHammer: number of times to toggle each row-pair
 static const ulong data_pattern =  0x00000000UL;
+
+static const uintptr_t test_size = 1 << 18; // Memory Latency: 256KB test range
+static const uintptr_t step = 512; // Memory Latency: increment of offset
 
 volatile int    mstr_cpu;
 volatile int	run_cpus;
@@ -1064,8 +1067,7 @@ int do_test(int my_ord)
 		break;
 
         case 12: /* Memory Latency Analysis */
-            latency_analysis(my_ord);
-            // Remove this break to perform the rowhammer attack
+            latency_analysis(test_size, step, my_ord);
             break;
 
         case 13: /* RowHammer */
@@ -1266,8 +1268,8 @@ static int find_ticks_for_test(int tst)
 	case 11: /* Bit fade test */
 		ticks = c * 2 + 4 * ch;
 		break;
-	case 12: /* Memory Latency Analysis [TODO] Fix this value */
-		ticks = ch;
+	case 12: /* Memory Latency Analysis */
+		ticks = test_size / step;
 		break;
     case 13: /* RowHammer */
 		ticks = (4 * ch) + (2 * row_max);
