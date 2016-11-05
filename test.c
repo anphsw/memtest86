@@ -1557,7 +1557,7 @@ void sleep(long n, int flag, int me, int sms)
 void measure(uintptr_t address, int iteration, double *mean, double *sigma) {
     uint64_t start, end;
     double K = 0, sum = 0, sumsq = 0;
-    double n = 100;
+    double n = 200;
 
     for (int i = 0; i < n; i++) {
         // Measurement of uncached access time to address location
@@ -1584,16 +1584,18 @@ void measure(uintptr_t address, int iteration, double *mean, double *sigma) {
 char* print_serial(int step, double mean1, double sigma1,
                    double mean2, double sigma2)
 {
-    serial_echo_print("Begin Sample Data:\n");
-    serial_echo_printd((double)step);
-    serial_echo_printd(mean1);
-    serial_echo_printd(sigma1);
-    serial_echo_printd(mean2);
-    serial_echo_printd(sigma2);
-    serial_echo_printd(mean1+
-                      sigma1+
-                      mean2+
-                      sigma2);
+    int a = sizeof(double), b;
+    serial_echo_print("Begin Sample Data:");
+    for(; a != 0; a /= 10) {
+        b = a % 10;
+        serial_echo_print(&b);
+    }
+    serial_echo_print("Cegin Sample Data:");
+    serial_echo_printd(1);
+    serial_echo_printd(1);
+    serial_echo_printd(0);
+    serial_echo_printd(1);
+    serial_echo_printd(1);
     serial_echo_print("\n");
 }
 

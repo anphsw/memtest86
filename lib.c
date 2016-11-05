@@ -880,8 +880,9 @@ void serial_echo_print(const char *p)
 	}
 }
 
-void serial_echo_printd(const double value)
+void serial_echo_printd(double value)
 {
+    char *address = (char *)&value;
 	if (!serial_cons) {
 		return;
 	}
@@ -889,13 +890,8 @@ void serial_echo_printd(const double value)
     for(int i = 0; i < sizeof(double); i++) {
         WAIT_FOR_XMITR;
 
-        char p = (char)*(&value+i);
 		/* Send the byte out. */
-		serial_echo_outb(p, UART_TX);
-		if(p == 10) {
-			WAIT_FOR_XMITR;
-			serial_echo_outb(13, UART_TX);
-		}
+		serial_echo_outb((char)address[i], UART_TX);
     }
 }
 
