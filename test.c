@@ -1584,7 +1584,7 @@ void measure(uintptr_t address, int iteration, double *mean, double *sigma) {
 void print_serial(int step, double mean1, double sigma1,
                    double mean2, double sigma2)
 {
-    serial_echo_print("\nBegin sample transmission");
+    serial_echo_print("\nBegin sample data");
     serial_echo_print("\nstep:");
     serial_echo_printd(step, 5);
     serial_echo_print("\nmean1:");
@@ -1620,7 +1620,10 @@ void latency_analysis(uintptr_t test_size, uintptr_t step, int me)
         }
 
         test_size -= size;
-        if(test_size <= 0) break;
+        if(test_size <= 0) {
+            serial_echo_print("\nLatency Analysis Complete");
+            break;
+        }
     }
 }
 
