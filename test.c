@@ -1584,16 +1584,16 @@ void measure(uintptr_t address, int iteration, double *mean, double *sigma) {
 char* print_serial(int step, double mean1, double sigma1,
                    double mean2, double sigma2)
 {
-    serial_echo_print("Begin sample transmission");
-    serial_echo_print("step:");
+    serial_echo_print("\nBegin sample transmission");
+    serial_echo_print("\nstep:");
     serial_echo_printd(step);
-    serial_echo_print("mean1:");
+    serial_echo_print("\nmean1:");
     serial_echo_printd(mean1);
-    serial_echo_print("sigma1:");
+    serial_echo_print("\nsigma1:");
     serial_echo_printd(sigma1);
-    serial_echo_print("mean2:");
+    serial_echo_print("\nmean2:");
     serial_echo_printd(mean2);
-    serial_echo_print("sigma2:");
+    serial_echo_print("\nsigma2:");
     serial_echo_printd(sigma2);
 }
 
