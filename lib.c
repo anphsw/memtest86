@@ -880,19 +880,40 @@ void serial_echo_print(const char *p)
 	}
 }
 
-void serial_echo_printd(double value)
-{
-    char *address = (char *)&value;
-	if (!serial_cons) {
-		return;
-	}
-	/* Now, transfer each byte */
-    for(int i = 0; i < sizeof(double); i++) {
-        WAIT_FOR_XMITR;
+void serial_echo_printd(double value) {
+        int digits[64], i = 0, j = 0;
 
-		/* Send the byte out. */
-		serial_echo_outb((char)address[i], UART_TX);
-    }
+        // Handle negative values
+        if (value < 0)  {
+                value *= -1;
+                serial_echo_outb('-', UART_TX);
+        }
+        uint64_t a = value;
+
+        // Handle zero integer part
+        if (a == 0) {
+                serial_echo_outb('0', UART_TX);
+        }
+        else {
+                // Handle integer part
+                for(; a != 0; a/=10) {
+                        digits[i] = a%10;
+                        i++;
+                }
+                for(j = i-1; j != -1; j--) {
+                        serial_echo_outb('0'+digits[j], UART_TX);
+                }
+        }
+
+        serial_echo_outb('.', UART_TX);
+
+        // Handle floating part
+        double b = value - (uint64_t)value;
+        for(int i = 0; i < 5; i++) {
+                b *= 10;
+                serial_echo_outb('0'+(int)b%10, UART_TX);
+        }
+        serial_echo_outb(13, UART_TX);
 }
 
 /* Except for multi-character key sequences this mapping

@@ -1584,19 +1584,17 @@ void measure(uintptr_t address, int iteration, double *mean, double *sigma) {
 char* print_serial(int step, double mean1, double sigma1,
                    double mean2, double sigma2)
 {
-    int a = sizeof(double), b;
-    serial_echo_print("Begin Sample Data:");
-    for(; a != 0; a /= 10) {
-        b = a % 10;
-        serial_echo_print(&b);
-    }
-    serial_echo_print("Cegin Sample Data:");
-    serial_echo_printd(1);
-    serial_echo_printd(1);
-    serial_echo_printd(0);
-    serial_echo_printd(1);
-    serial_echo_printd(1);
-    serial_echo_print("\n");
+    serial_echo_print("Begin sample transmission");
+    serial_echo_print("step:");
+    serial_echo_printd(step);
+    serial_echo_print("mean1:");
+    serial_echo_printd(mean1);
+    serial_echo_print("sigma1:");
+    serial_echo_printd(sigma1);
+    serial_echo_print("mean2:");
+    serial_echo_printd(mean2);
+    serial_echo_print("sigma2:");
+    serial_echo_printd(sigma2);
 }
 
 void latency_analysis(uintptr_t test_size, uintptr_t step, int me)
