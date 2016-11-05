@@ -880,7 +880,7 @@ void serial_echo_print(const char *p)
 	}
 }
 
-void serial_echo_printd(double value) {
+void serial_echo_printd(double value, int decimals) {
         int digits[64], i = 0, j = 0;
 
         // Handle negative values
@@ -913,7 +913,7 @@ void serial_echo_printd(double value) {
 
         // Handle floating part
         double b = value - (uint64_t)value;
-        for(int i = 0; i < 5; i++) {
+        for(int i = 0; i < decimals; i++) {
                 b *= 10;
                 WAIT_FOR_XMITR;
                 serial_echo_outb('0'+(int)b%10, UART_TX);

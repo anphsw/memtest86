@@ -122,7 +122,7 @@ void reverse(char *p);
 void serial_console_setup(char *param);
 void serial_echo_init(void);
 void serial_echo_print(const char *s);
-void serial_echo_printd(const double value);
+void serial_echo_printd(double value, int decimals);
 void ttyprint(int y, int x, const char *s);
 void ttyprintc(int y, int x, char c);
 void cprint(int y,int x, const char *s);

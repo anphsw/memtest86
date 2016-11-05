@@ -1581,20 +1581,20 @@ void measure(uintptr_t address, int iteration, double *mean, double *sigma) {
     *sigma = (sumsq - (sum * sum)/n) / (n - 1);
 }
 
-char* print_serial(int step, double mean1, double sigma1,
+void print_serial(int step, double mean1, double sigma1,
                    double mean2, double sigma2)
 {
     serial_echo_print("\nBegin sample transmission");
     serial_echo_print("\nstep:");
-    serial_echo_printd(step);
+    serial_echo_printd(step, 5);
     serial_echo_print("\nmean1:");
-    serial_echo_printd(mean1);
+    serial_echo_printd(mean1, 5);
     serial_echo_print("\nsigma1:");
-    serial_echo_printd(sigma1);
+    serial_echo_printd(sigma1, 5);
     serial_echo_print("\nmean2:");
-    serial_echo_printd(mean2);
+    serial_echo_printd(mean2, 5);
     serial_echo_print("\nsigma2:");
-    serial_echo_printd(sigma2);
+    serial_echo_printd(sigma2, 5);
 }
 
 void latency_analysis(uintptr_t test_size, uintptr_t step, int me)
