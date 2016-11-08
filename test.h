@@ -193,6 +193,7 @@ void bit_fade_fill(unsigned long n, int cpu);
 void bit_fade_chk(unsigned long n, int cpu);
 void measure(unsigned int address, int iteration, double* mean, double* stddev);
 void latency_analysis(unsigned int test_size, unsigned int step, int me);
+void memscan_analysis(unsigned int offset, unsigned int test_size, unsigned int step, int me);
 void rowhammer(int row_max, int *row_cnt, int toggle_max, int cpu);
 void find_ticks_for_pass(void);
 void beep(unsigned int frequency);
