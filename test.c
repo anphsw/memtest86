@@ -1600,12 +1600,13 @@ void print_serial(int step, double mean1, double sigma1,
 void latency_analysis(uintptr_t test_size, uintptr_t step, int me)
 {
     double time_1_mean, time_2_mean, time_1_sigma, time_2_sigma;
+    uintptr_t size = 0;
 
-    // Repeat for every segment to be tested
+    // Repeat for every segment to be tested (every segment is 1GB wide)
     for (int s=0; s<segs; s++) {
         uintptr_t start = (uintptr_t) v->map[s].start;
         uintptr_t end = (uintptr_t) v->map[s].end;
-        uintptr_t size = end - start;
+        size = end - start;
 
         // Test loop, time will be measured in TSC ticks
         for (int i = 0; i < test_size && i < size; i+=step) {
@@ -1616,16 +1617,11 @@ void latency_analysis(uintptr_t test_size, uintptr_t step, int me)
                          time_2_mean, time_2_sigma);
 
             do_tick(me);
-            BAILR
         }
 
-        // Segment test complete
-        test_size -= size;
-        if(test_size <= 0) {
-            //[TODO] This is never printed -> Fix!
-            serial_echo_print("\nLatency Analysis Complete\n");
-            break;
-        }
+        // Segment test complete (at most one segment is tested)
+        serial_echo_print("\nLatency Analysis Complete\n");
+        BAILR
     }
 }
 
@@ -1650,18 +1646,12 @@ void memscan_analysis(uintptr_t offset, uintptr_t test_size, uintptr_t step, int
                          time_2_mean, time_2_sigma);
 
             do_tick(me);
-            BAILR
         }
 
-        // Segment test complete
-        test_size -= size;
-        if(test_size <= 0) {
-            serial_echo_print("\nMemscan Analysis Complete\n");
-            break;
-        }
+        // Segment test complete (at most one segment is tested)
+        serial_echo_print("\nMemscan Analysis Complete\n");
+        BAILR
     }
-
-
 }
 
 /* RowHammer */
