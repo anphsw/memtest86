@@ -1556,7 +1556,7 @@ void sleep(long n, int flag, int me, int sms)
 
 void measure(uintptr_t address, int iteration, double *mean, double *sigma) {
     uint64_t start, end;
-    double K = 0, sum = 0, sumsq = 0;
+    double inc_mean, M2;
     double n = 200;
 
     for (int i = 0; i < n; i++) {
@@ -1569,16 +1569,14 @@ void measure(uintptr_t address, int iteration, double *mean, double *sigma) {
         double value = (double)(end - start);
 
         // Incremental mean and variance computation
-        if(i == 0) {
-            K = value;
-        }
-        sum += value - K;
-        sumsq += (value - K) * (value - K);
+        double delta = value - inc_mean;
+        inc_mean += delta/(i+1);
+        M2 += delta*(value - inc_mean);
     }
 
     // We are writing the variance, cause we lack a square root implementation
-    *mean = K + sum / n;
-    *sigma = (sumsq - (sum * sum)/n) / (n - 1);
+    *mean = inc_mean;
+    *sigma = M2 / (n - 1);
 }
 
 void print_serial(int step, double mean1, double sigma1,
