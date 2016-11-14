@@ -1554,9 +1554,9 @@ void sleep(long n, int flag, int me, int sms)
 	}
 }
 
-void measure(uintptr_t address, int iteration, double *mean, double *sigma) {
+struct sample measure(uintptr_t address) {
     uint64_t start, end;
-    double inc_mean, M2;
+    double mean, M2;
     double n = 200;
 
     for (int i = 0; i < n; i++) {
@@ -1568,15 +1568,19 @@ void measure(uintptr_t address, int iteration, double *mean, double *sigma) {
 
         double value = (double)(end - start);
 
+        //serial_echo_print("\nvalue:\n");
+        //serial_echo_printd(value, 5);
+
         // Incremental mean and variance computation
-        double delta = value - inc_mean;
-        inc_mean += delta/(i+1);
-        M2 += delta*(value - inc_mean);
+        double delta = value - mean;
+        mean += delta/(i+1);
+        M2 += delta*(value - mean);
     }
 
-    // We are writing the variance, cause we lack a square root implementation
-    *mean = inc_mean;
-    *sigma = M2 / (n - 1);
+    // We are writing the variance, because we lack a square root implementation
+    double sigma = M2 / (n - 1);
+    struct sample s = {mean, sigma};
+    return s;
 }
 
 void print_serial(int step, double mean1, double sigma1,
@@ -1597,7 +1601,7 @@ void print_serial(int step, double mean1, double sigma1,
 
 void latency_analysis(uintptr_t test_size, uintptr_t step, int me)
 {
-    double time_1_mean, time_2_mean, time_1_sigma, time_2_sigma;
+    struct sample s1, s2;
     uintptr_t size = 0;
 
     // Repeat for every segment to be tested (every segment is 1GB wide)
@@ -1608,11 +1612,10 @@ void latency_analysis(uintptr_t test_size, uintptr_t step, int me)
 
         // Test loop, time will be measured in TSC ticks
         for (int i = 0; i < test_size && i < size; i+=step) {
-            measure(start, i/step, &time_1_mean, &time_1_sigma);
-            measure(start+i, i/step, &time_2_mean, &time_2_sigma);
+            s1 = measure(start);
+            s2 = measure(start+i);
 
-            print_serial(i/step, time_1_mean, time_1_sigma,
-                         time_2_mean, time_2_sigma);
+            print_serial(i/step, s1.mean, s1.sigma, s2.mean, s2.sigma);
 
             do_tick(me);
         }
@@ -1625,7 +1628,7 @@ void latency_analysis(uintptr_t test_size, uintptr_t step, int me)
 
 void memscan_analysis(uintptr_t offset, uintptr_t test_size, uintptr_t step, int me)
 {
-    double time_1_mean, time_2_mean, time_1_sigma, time_2_sigma;
+    struct sample s1, s2;
 
     // Pick two addresses with a given offset and scan all the segment
 
@@ -1637,11 +1640,10 @@ void memscan_analysis(uintptr_t offset, uintptr_t test_size, uintptr_t step, int
 
         // Test loop, time will be measured in TSC ticks
         for (int i = 0; i < (test_size-offset) && i < (size-offset); i+=step) {
-            measure(start+i, i/step, &time_1_mean, &time_1_sigma);
-            measure(start+i+offset, i/step, &time_2_mean, &time_2_sigma);
+            s1 = measure(start+i);
+            s2 = measure(start+i+offset);
 
-            print_serial(i/step, time_1_mean, time_1_sigma,
-                         time_2_mean, time_2_sigma);
+            print_serial(i/step, s1.mean, s1.sigma, s2.mean, s2.sigma);
 
             do_tick(me);
         }
