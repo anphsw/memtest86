@@ -1559,12 +1559,13 @@ struct sample measure(uintptr_t address) {
     double mean, M2;
     double n = 200;
 
+
     for (int i = 0; i < n; i++) {
         // Measurement of uncached access time to address location
-        start = RDTSC();
-        *(volatile int *) address;
-        end = RDTSC();
         asm volatile("clflush (%0)" : : "r" (address));
+        start = RDTSC();
+        *(volatile uint8_t *) address;
+        end = RDTSC();
 
         double value = (double)(end - start);
 
