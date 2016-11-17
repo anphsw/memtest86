@@ -16,6 +16,7 @@
 #include "cpuid.h"
 #include "smp.h"
 #include "config.h"
+#include "mapping.h"
 #undef TEST_TIMES
 #define DEFTESTS 9
 #define FIRST_DIVISER 3
@@ -63,7 +64,7 @@ struct tseq tseq[] = {
 	{1, 32,  9,  48, 0, "[Random number sequence]               "},
 	{1, 32, 10,   6, 0, "[Modulo 20, Random pattern]            "},
 	{1,  1, 11, 240, 0, "[Bit fade test, 2 patterns]            "},
-    {1,  1, 12,   1, 0, "[Memory Latency Analysis]              "},
+    {1,  1, 12,   1, 0, "[ Latency Analysis]              "},
 	{0,  1, 13,   1, 0, "[RowHammer]                            "},
 	{1,  0,  0,   0, 0, NULL}
 };
@@ -1068,8 +1069,9 @@ int do_test(int my_ord)
 		break;
 
         case 12: /* Memory Latency Analysis */
-            latency_analysis(test_size, step, my_ord);
-            memscan_analysis(offset, test_size, step, my_ord);
+            //latency_analysis(test_size, step, my_ord);
+            //memscan_analysis(offset, test_size, step, my_ord);
+            verify_mapping();
             break;
 
         case 13: /* RowHammer */

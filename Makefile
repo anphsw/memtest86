@@ -17,7 +17,7 @@ CFLAGS= -Wall -march=i486 -m32 -O0 -fomit-frame-pointer -fno-builtin \
 
 OBJS= head.o reloc.o main.o test.o init.o lib.o patn.o screen_buffer.o \
       config.o cpuid.o linuxbios.o pci.o memsize.o spd.o error.o dmi.o controller.o \
-      smp.o vmem.o random.o libgcc.a
+      smp.o vmem.o random.o mapping.o libgcc.a
 
 
 all: memtest.bin memtest
