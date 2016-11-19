@@ -1071,7 +1071,7 @@ int do_test(int my_ord)
         case 12: /* Memory Latency Analysis */
             //latency_analysis(test_size, step, my_ord);
             //memscan_analysis(offset, test_size, step, my_ord);
-            verify_mapping();
+            verify_mapping(my_ord);
             break;
 
         case 13: /* RowHammer */
@@ -1273,7 +1273,8 @@ static int find_ticks_for_test(int tst)
 		ticks = c * 2 + 4 * ch;
 		break;
 	case 12: /* Memory Latency Analysis + Memscan */
-		ticks = (test_size/step) + (test_size-offset)/step;
+		//ticks = (test_size/step) + (test_size-offset)/step;
+        ticks = 6; // verify_mapping total tests
 		break;
     case 13: /* RowHammer */
 		ticks = (4 * ch) + (2 * row_max);

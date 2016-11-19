@@ -1,30 +1,33 @@
 #include "mapping.h"
 #include "test.h"
+#include "config.h"
 
 // [TODO] Consider Bank XORing with lower 3 bits of row number
 struct testArray sandyTest[TESTS] = {{"Byte", 0, 5},
-                                     {"Row", 18, 32},
+                                     {"Row", 18, 23}, // This is 18-32
                                      {"Bank", 14, 16},
                                      {"Rank", 17, 17},
                                      {"Module", 33, 34},
                                      {"Channel", 6, 6}};
 
-void verify_mapping() {
+void verify_mapping(int me) {
 
     uintptr_t base = (uintptr_t) v->map[0].start;
     struct sample s;
 
-    serial_echo_print("\nAssigned base address is:\n");
-    serial_echo_printd(base, 0);
+    // Assigned memory segments are:
+    // 1048576 = 1 << 20
+    // 2147483648 = 1 << 31, this 4 times
 
-    // [TODO] Verify assigned memory
-    // [TODO] Start from address with many zeroes
+    // Start with an aligned address at least to byte 13
+    uintptr_t offset = base%LASTROWBIT;
+    base += offset;
 
-    for(int i=0; i<=TESTS; i++) {
+    for(int i=0; i<TESTS; i++) {
         char *name = sandyTest[i].fieldName;
         int start = sandyTest[i].startBit;
         int end = sandyTest[i].endBit;
-        int size = 1 << (start-end+1);
+        int size = 1 << (end-start+1);
 
         print_test_status(name, 1);
 
@@ -33,8 +36,8 @@ void verify_mapping() {
             s = measure(target);
             print_serial_single(j, s.mean, s.sigma);
         }
-
         print_test_status(name, 0);
+        do_tick(me);
     }
 }
 
@@ -50,11 +53,11 @@ void print_serial_single(int step, double mean, double sigma) {
 
 void print_test_status(char *testName, uint8_t begin) {
     if(begin) {
-        serial_echo_print("\nBegin test ");
+        serial_echo_print("\n\nBegin test ");
         serial_echo_print(testName);
         serial_echo_print(":\n");
     } else {
-        serial_echo_print("\nFinished test ");
+        serial_echo_print("\n\nFinished test ");
         serial_echo_print(testName);
         serial_echo_print(":\n");
     }
