@@ -1069,9 +1069,9 @@ int do_test(int my_ord)
 		break;
 
         case 12: /* Memory Latency Analysis */
-            latency_analysis(test_size, step, my_ord);
-            memscan_analysis(offset, test_size, step, my_ord);
-            //verify_mapping(my_ord);
+            //latency_analysis(test_size, step, my_ord);
+            //memscan_analysis(offset, test_size, step, my_ord);
+            verify_mapping(my_ord);
             break;
 
         case 13: /* RowHammer */
