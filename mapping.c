@@ -15,7 +15,7 @@ void verify_mapping(int me) {
     uintptr_t base = (uintptr_t) v->map[0].start;
     struct sample s;
 
-    // Assigned memory segments are:
+    // Assigsned memory segments are:
     // 1048576 = 1 << 20
     // 2147483648 = 1 << 31, this 4 times
 
@@ -34,21 +34,21 @@ void verify_mapping(int me) {
         for(int j=0; j < size; j++) {
             uint64_t target = SET_RANGE(base, start, end, j);
             s = measure(target);
-            print_serial_single(j, s.mean, s.sigma);
+            print_serial_single(j, s.mean, s.variance);
         }
         print_test_status(name, 0);
         do_tick(me);
     }
 }
 
-void print_serial_single(int step, double mean, double sigma) {
+void print_serial_single(int step, double mean, double variance) {
     serial_echo_print("\nBegin sample data");
     serial_echo_print("\nstep:");
     serial_echo_printd(step, 5);
     serial_echo_print("\nmean:");
     serial_echo_printd(mean, 5);
-    serial_echo_print("\nsigma:");
-    serial_echo_printd(sigma, 5);
+    serial_echo_print("\nvariance:");
+    serial_echo_printd(variance, 5);
 }
 
 void print_test_status(char *testName, uint8_t begin) {

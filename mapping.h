@@ -17,7 +17,7 @@ struct testArray {
 };
 
 void verify_mapping(int me);
-void print_serial_single(int step, double mean, double sigma);
+void print_serial_single(int step, double mean, double variance);
 void print_test_status(char *testName, uint8_t begin);
 
 extern struct vars * const v;
