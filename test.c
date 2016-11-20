@@ -1556,11 +1556,10 @@ void sleep(long n, int flag, int me, int sms)
 
 struct sample measure(uintptr_t address) {
     uint64_t start, end;
-    double mean, M2;
-    double n = 200;
+    double mean = 0, M2 = 0;
 
 
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < SAMPLE_CNT; i++) {
         // Measurement of uncached access time to address location
         asm volatile("clflush (%0)" : : "r" (address));
         start = RDTSC();
@@ -1569,9 +1568,6 @@ struct sample measure(uintptr_t address) {
 
         double value = (double)(end - start);
 
-        //serial_echo_print("\nvalue:\n");
-        //serial_echo_printd(value, 5);
-
         // Incremental mean and variance computation
         double delta = value - mean;
         mean += delta/(i+1);
@@ -1579,7 +1575,7 @@ struct sample measure(uintptr_t address) {
     }
 
     // We are writing the variance, because we lack a square root implementation
-    double sigma = M2 / (n - 1);
+    double sigma = M2 / (SAMPLE_CNT - 1);
     struct sample s = {mean, sigma};
     return s;
 }

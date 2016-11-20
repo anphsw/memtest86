@@ -40,6 +40,8 @@ struct sample {
     double sigma;
 };
 
+#define SAMPLE_CNT     200
+
 typedef unsigned long ulong;
 #define STACKSIZE       (8*1024)
 #define MAX_MEM         0x7FF00000      /* 8 TB */
