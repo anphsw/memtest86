@@ -4,7 +4,7 @@
 
 // [TODO] Consider Bank XORing with lower 3 bits of row number
 struct testArray sandyTest[TESTS] = {{"Byte", 0, 5},
-                                     {"Row", 18, 23}, // This is 18-32
+                                     {"Row", 18, 28}, // This is 18-32
                                      {"Bank", 14, 16},
                                      {"Rank", 17, 17},
                                      {"Module", 33, 34},
