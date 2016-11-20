@@ -1575,25 +1575,25 @@ struct sample measure(uintptr_t address) {
     }
 
     // We are writing the variance, because we lack a square root implementation
-    double sigma = M2 / (SAMPLE_CNT - 1);
-    struct sample s = {mean, sigma};
+    double variance = M2 / (double)(SAMPLE_CNT - 1);
+    struct sample s = {mean, variance};
     return s;
 }
 
-void print_serial(int step, double mean1, double sigma1,
-                   double mean2, double sigma2)
+void print_serial(int step, double mean1, double variance1,
+                   double mean2, double variance2)
 {
     serial_echo_print("\nBegin sample data");
     serial_echo_print("\nstep:");
     serial_echo_printd(step, 5);
     serial_echo_print("\nmean1:");
     serial_echo_printd(mean1, 5);
-    serial_echo_print("\nsigma1:");
-    serial_echo_printd(sigma1, 5);
+    serial_echo_print("\nvariance1:");
+    serial_echo_printd(variance1, 5);
     serial_echo_print("\nmean2:");
     serial_echo_printd(mean2, 5);
-    serial_echo_print("\nsigma2:");
-    serial_echo_printd(sigma2, 5);
+    serial_echo_print("\nvariance2:");
+    serial_echo_printd(variance2, 5);
 }
 
 void latency_analysis(uintptr_t test_size, uintptr_t step, int me)
@@ -1612,7 +1612,7 @@ void latency_analysis(uintptr_t test_size, uintptr_t step, int me)
             s1 = measure(start);
             s2 = measure(start+i);
 
-            print_serial(i/step, s1.mean, s1.sigma, s2.mean, s2.sigma);
+            print_serial(i/step, s1.mean, s1.variance, s2.mean, s2.variance);
 
             do_tick(me);
         }
@@ -1640,7 +1640,7 @@ void memscan_analysis(uintptr_t offset, uintptr_t test_size, uintptr_t step, int
             s1 = measure(start+i);
             s2 = measure(start+i+offset);
 
-            print_serial(i/step, s1.mean, s1.sigma, s2.mean, s2.sigma);
+            print_serial(i/step, s1.mean, s1.variance, s2.mean, s2.variance);
 
             do_tick(me);
         }

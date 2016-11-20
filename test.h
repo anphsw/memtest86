@@ -37,7 +37,7 @@ struct mem_info_t {
 
 struct sample {
     double mean;
-    double sigma;
+    double variance;
 };
 
 #define SAMPLE_CNT     200
