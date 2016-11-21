@@ -39,6 +39,8 @@ void verify_mapping(int me) {
         print_test_status(name, 0);
         do_tick(me);
     }
+
+    serial_echo_print("\nSegment test complete!\n");
 }
 
 void print_serial_single(int step, double mean, double variance) {
