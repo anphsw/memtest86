@@ -4,11 +4,12 @@
 
 // [TODO] Consider Bank XORing with lower 3 bits of row number
 struct testArray sandyTest[TESTS] = {{"Byte", 0, 5},
-                                     {"Row", 18, 28}, // This is 18-32
+                                     {"Channel", 6, 6},
+                                     {"Column", 7, 13},
                                      {"Bank", 14, 16},
                                      {"Rank", 17, 17},
-                                     {"Module", 33, 34},
-                                     {"Channel", 6, 6}};
+                                     {"Row", 18, 32},
+                                     {"Module", 33, 34}};
 
 void verify_mapping(int me) {
 
@@ -33,8 +34,11 @@ void verify_mapping(int me) {
 
         for(int j=0; j < size; j++) {
             uint64_t target = SET_RANGE(base, start, end, j);
-            s = measure(target);
+            s = context_measure(target, base);
             print_serial_single(j, s.mean, s.variance);
+            // Handle exponential sweep for Row test
+            if(i == 5)
+                j *= j;
         }
         print_test_status(name, 0);
         do_tick(me);

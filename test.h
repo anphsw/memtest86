@@ -199,6 +199,7 @@ ulong correct_tsc(ulong el_org);
 void bit_fade_fill(unsigned long n, int cpu);
 void bit_fade_chk(unsigned long n, int cpu);
 struct sample measure(unsigned int address);
+struct sample context_measure(unsigned int address, unsigned int base);
 void latency_analysis(unsigned int test_size, unsigned int step, int me);
 void memscan_analysis(unsigned int offset, unsigned int test_size, unsigned int step, int me);
 void rowhammer(int row_max, int *row_cnt, int toggle_max, int cpu);

@@ -1580,6 +1580,33 @@ struct sample measure(uintptr_t address) {
     return s;
 }
 
+struct sample context_measure(uintptr_t address, uintptr_t base) {
+    uint64_t start, end;
+    double mean = 0, M2 = 0;
+
+    for (int i = 0; i < SAMPLE_CNT; i++) {
+        // First we make an access to the base address
+        asm volatile("clflush (%0)" : : "r" (base));
+        *(volatile uint8_t *) base;
+        asm volatile("clflush (%0)" : : "r" (address));
+        start = RDTSC();
+        *(volatile uint8_t *) address;
+        end = RDTSC();
+
+        double value = (double)(end - start);
+
+        // Incremental mean and variance computation
+        double delta = value - mean;
+        mean += delta/(i+1);
+        M2 += delta*(value - mean);
+    }
+
+    // We are writing the variance, because we lack a square root implementation
+    double variance = M2 / (double)(SAMPLE_CNT - 1);
+    struct sample s = {mean, variance};
+    return s;
+}
+
 void print_serial(int step, double mean1, double variance1,
                    double mean2, double variance2)
 {

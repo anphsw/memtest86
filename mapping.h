@@ -3,7 +3,7 @@
 
 #include "stdint.h"
 
-#define TESTS 6
+#define TESTS 7
 #define LASTROWBIT 1<<13 // Last bit for byte-in-row addressing
 
 // Macros for getting and setting relevant part of address
