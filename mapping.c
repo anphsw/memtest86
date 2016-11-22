@@ -38,7 +38,7 @@ void verify_mapping(int me) {
             print_serial_single(j, s.mean, s.variance);
             // Handle exponential sweep for Row test
             if(i == 5)
-                j *= j;
+                j += (size / 1000);
         }
         print_test_status(name, 0);
         do_tick(me);
