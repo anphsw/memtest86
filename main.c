@@ -74,9 +74,9 @@ static int row_cnt = 0;                // RowHammer: number of row-pairs tested 
 static const int toggle_max = 2600000; // RowHammer: number of times to toggle each row-pair
 static const ulong data_pattern =  0x00000000UL;
 
-//static const uintptr_t test_size = 1 << 15; // Memory Latency: 32KB test range
-//static const uintptr_t step = 64; // Memory Latency: increment of offset
-//static const uintptr_t offset = 128; // Offset for memory scan test
+static const uintptr_t test_size = 1 << 13; // Memory Latency: 8KB test range
+static const uintptr_t step = 1; // Memory Latency: increment of offset
+static const uintptr_t offset = 128; // Offset for memory scan test
 
 volatile int    mstr_cpu;
 volatile int	run_cpus;
@@ -1069,9 +1069,9 @@ int do_test(int my_ord)
 		break;
 
         case 12: /* Memory Latency Analysis */
-            //latency_analysis(test_size, step, my_ord);
+            latency_analysis(test_size, step, my_ord);
             //memscan_analysis(offset, test_size, step, my_ord);
-            verify_mapping(my_ord);
+            //verify_mapping(my_ord);
             return(0);
             break;
 
