@@ -1639,13 +1639,14 @@ void latency_analysis(uintptr_t test_size, uintptr_t step, int me)
             s1 = measure(start);
             s2 = context_measure(start+i, start);
 
-            print_serial(i/step, s1.mean, s1.variance, s2.mean, s2.variance);
+            print_serial(i, s1.mean, s1.variance, s2.mean, s2.variance);
 
             do_tick(me);
         }
 
         // Segment test complete (at most one segment is tested)
         serial_echo_print("\nLatency Analysis Complete\n");
+        return;
         BAILR
     }
 }
