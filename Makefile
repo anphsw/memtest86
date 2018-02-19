@@ -20,7 +20,7 @@ OBJS= head.o reloc.o main.o test.o init.o lib.o patn.o screen_buffer.o \
       smp.o vmem.o random.o
       
 
-all: clean memtest.bin memtest 
+all: memtest.bin memtest 
 
 # Link it statically once so I know I don't have undefined
 # symbols and then link it dynamically so I have full
