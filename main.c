@@ -852,7 +852,8 @@ int do_test(int my_ord)
 	    cprint(LINE_RANGE, COL_MID+30, " of ");
 	    aprint(LINE_RANGE, COL_MID+34, v->selected_pages);
 	}
-	
+	s_barrier();
+
 	switch(tseq[test].pat) {
 
 	/* Do the testing according to the selected pattern */
