@@ -394,6 +394,9 @@ void test_start(void)
 	/* If this is the first time here we are CPU 0 */
 	if (start_seq == 0) {
 		my_cpu_num = 0;
+		if ((ulong)&_start != LOW_TEST_ADR) {
+		    run_at(LOW_TEST_ADR, 0);
+		}
 	} else {
 		my_cpu_num = smp_my_cpu_num();
 	}
