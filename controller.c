@@ -2858,7 +2858,7 @@ static void poll_timings_i875(void) {
 	long *ptr, *ptr2;
 
 	pci_conf_read( 0, 6, 0, 0x40, 4, &dev62);
-	ptr2=(long*)(dev6+0x68);
+	ptr2=(long*)(dev62+0x68);
 
 	/* Read the MMR Base Address & Define the pointer */
 	pci_conf_read( 0, 6, 0, 0x10, 4, &dev6);
