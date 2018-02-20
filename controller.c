@@ -1424,7 +1424,7 @@ static void poll_fsb_amd64(void) {
 	unsigned long dramchr;
 	float clockratio;
 	double dramclock;
-	unsigned int dummy[3];
+	unsigned int dummy[4];
 	int ram_type;
 
 	float coef = 10;
