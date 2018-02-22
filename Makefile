@@ -12,7 +12,7 @@ FDISK=/dev/fd0
 AS=as -32
 CC=gcc
 
-CFLAGS= -Wall -march=i486 -m32 -O1 -fomit-frame-pointer -fno-builtin \
+CFLAGS= -Wall -march=i486 -m32 -O0 -fomit-frame-pointer -fno-builtin \
 	-ffreestanding -fPIC $(SMP_FL) -fno-stack-protector -fgnu89-inline -fno-pie
 	
 OBJS= head.o reloc.o main.o test.o init.o lib.o patn.o screen_buffer.o \
@@ -46,7 +46,7 @@ setup.s: setup.S config.h defs.h
 	$(CC) -E -traditional $< -o $@
 
 memtest.bin: memtest_shared.bin bootsect.o setup.o memtest.bin.lds
-	$(LD) -T memtest.bin.lds bootsect.o setup.o -b binary \
+	$(LD) -no-pie -T memtest.bin.lds bootsect.o setup.o -b binary \
 	memtest_shared.bin -o memtest.bin
 
 reloc.o: reloc.c
