@@ -57,7 +57,7 @@ struct tseq tseq[] = {
 	{1, 32,  7,  81, 0, "[Block move]                           "}, 
 	{1,  1,  8,   3, 0, "[Moving inversions, 32 bit pattern]    "}, 
 	{1, 32,  9,  48, 0, "[Random number sequence]               "},
-  {1, 32, 10,   6, 0, "[Modulo 20, Random pattern]            "},
+	{1, 32, 10,   6, 0, "[Modulo 20, Random pattern]            "},
 	{1, 1,  11, 240, 0, "[Bit fade test, 2 patterns]            "},
 	{1, 0,   0,   0, 0, NULL}
 };
@@ -956,6 +956,18 @@ int do_test(int my_ord)
 		break;
 
 	case 10: /* Modulo 20 check, Random pattern (test #10) */
+		/* Seed the random number generator */
+		if (my_ord == mstr_cpu) {
+		    if (cpu_id.fid.bits.rdtsc) {
+			asm __volatile__ ("rdtsc":"=a" (sp1),"=d" (sp2));
+		    } else {
+			sp1 = 521288629 + v->pass;
+			sp2 = 362436069 - v->pass;
+		    }
+		    rand_seed(sp1, sp2, 0);
+		}
+
+		s_barrier();
 		for (j=0; j<c_iter; j++) {
 			p1 = rand(0);
 			for (i=0; i<MOD_SZ; i++) {
