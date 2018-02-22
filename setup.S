@@ -84,6 +84,9 @@ alt_a20_done:
  * Note that the short jump isn't strictly needed, althought there are
  * reasons why it might be a good idea. It won't hurt in any case.
  */
+	xorl    %ebx, %ebx
+	movw    %ss, %bx
+	shll    $4, %ebx
 	movw	$0x0001, %ax	# protected mode (PE) bit
 	lmsw	%ax		# This is it#
 	jmp	flush_instr
@@ -92,6 +95,7 @@ flush_instr:
 	movw	%ax, %ds
 	movw	%ax, %es
 	movw	%ax, %ss
+	addl    %ebx, %esp
 	movw	%ax, %fs
 	movw	%ax, %gs
 
