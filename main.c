@@ -231,11 +231,9 @@ switch_to_main_stack(unsigned cpu_num)
 	extern uintptr_t boot_stack_top; 
 	uintptr_t *src, *dst;
 	int offs;
-	uint8_t * stackAddr, *stackTop;
+	uint8_t *stackTop;
    
-	stackAddr = (uint8_t *) &stacks[cpu_num][0];
-
-	stackTop  = stackAddr + STACKSIZE;
+	stackTop = (uint8_t *) &stacks[MAX_CPUS - cpu_num][0];
    
 	src = (uintptr_t*)&boot_stack_top;
 	dst = (uintptr_t*)stackTop;
