@@ -13,7 +13,7 @@ AS=as -32
 CC=gcc
 
 CFLAGS= -Wall -march=i486 -m32 -O0 -fomit-frame-pointer -fno-builtin \
-	-ffreestanding -fPIC $(SMP_FL) -fno-stack-protector -fgnu89-inline -fno-pie
+	-ffreestanding -fPIC $(SMP_FL) -fno-stack-protector -fgnu89-inline
 	
 OBJS= head.o reloc.o main.o test.o init.o lib.o patn.o screen_buffer.o \
       config.o cpuid.o linuxbios.o pci.o memsize.o spd.o error.o dmi.o controller.o \
@@ -46,7 +46,7 @@ setup.s: setup.S config.h defs.h
 	$(CC) -E -traditional $< -o $@
 
 memtest.bin: memtest_shared.bin bootsect.o setup.o memtest.bin.lds
-	$(LD) -no-pie -T memtest.bin.lds bootsect.o setup.o -b binary \
+	$(LD) -T memtest.bin.lds bootsect.o setup.o -b binary \
 	memtest_shared.bin -o memtest.bin
 
 reloc.o: reloc.c
@@ -56,7 +56,7 @@ test.o: test.c
 	$(CC) -c -Wall -march=i486 -m32 -O0 -fomit-frame-pointer -fno-builtin -ffreestanding -fno-pie test.c
 
 random.o: random.c
-	$(CC) -c -Wall -march=i486 -m32 -O3 -fomit-frame-pointer -fno-builtin -ffreestanding -fno-pie random.c
+	$(CC) -c -Wall -march=i486 -m32 -O3 -fomit-frame-pointer -fno-builtin -ffreestanding random.c
 	
 # rule for build number generation  
 build_number:
