@@ -92,8 +92,8 @@ void get_config()
 					cprint(POP_Y+4, POP_X+5,
 						"Test Number [1-11]: ");
 					n = getval(POP_Y+4, POP_X+24, 0) - 1;
-					if (n <= 11) 
-						{
+					if (0 < n && n <= 11) 
+					{
 					    /* Deselect all tests */
 					    i = 0;
 					    while (tseq[i].cpu_sel) {
@@ -104,10 +104,17 @@ void get_config()
 					    tseq[n].sel = 1;
 					    v->pass = -1;
 					    test = n;
-					    find_ticks_for_pass();
-					    sflag++;
-          		bail++;
-						}
+					} else {
+					    /* Default - All tests */
+					    i = 0;
+					    while (tseq[i].cpu_sel) {
+						tseq[i].sel = 1;
+						i++;
+					    }
+					}
+					find_ticks_for_pass();
+					sflag++;
+					bail++;
 					break;
 				case 5:
 					/* Enter a test list */
