@@ -205,11 +205,13 @@ int open_dmi(void){
 	while(dmi < table_start + eps->tablelength){
 		struct tstruct_header *header = (struct tstruct_header *)dmi;
 		
-		if (header->type == 17)
+		if ((header->type == 17) &&
+		    (mem_devs_count < MAX_DMI_MEMDEVS))
 			mem_devs[mem_devs_count++] = (struct mem_dev *)dmi;
 		
 		// Need fix (SMBIOS/DDR3)
-		if (header->type == 20 || header->type == 1)
+		if ((header->type == 20 || header->type == 1) &&
+		    (md_maps_count < MAX_DMI_MEMDEVS))
 			md_maps[md_maps_count++] = (struct md_map *)dmi;
 
 		// MB_SPEC
