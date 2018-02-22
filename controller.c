@@ -4013,6 +4013,7 @@ struct pci_memory_controller controllers[] = {
 	{ 0xFFFF, 0x0007, "HSW IMC","",			 	 		0, poll_fsb_ivb, 	poll_timings_hsw, setup_wmr, poll_nothing},		
 	{ 0xFFFF, 0x0008, "PineView IMC","", 			0, poll_fsb_p35, poll_timings_p35, setup_p35, poll_nothing},
 	{ 0xFFFF, 0x0009, "CedarTrail IMC","",		0, poll_fsb_ct, poll_timings_ct, setup_nothing, poll_nothing},
+	{ 0xFFFF, 0x000A, "BayTrail IMC","",		0, poll_fsb_ct, poll_timings_ct, setup_nothing, poll_nothing}, // same as CedarTrail IMC
 	
 	/* AMD IMC (Integrated Memory Controllers) */
 	{ 0xFFFF, 0x0100, "AMD K8 IMC","",				0, poll_fsb_amd64, poll_timings_amd64, setup_amd64, poll_nothing },

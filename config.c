@@ -92,7 +92,7 @@ void get_config()
 					cprint(POP_Y+4, POP_X+5,
 						"Test Number [1-11]: ");
 					n = getval(POP_Y+4, POP_X+24, 0) - 1;
-					if (0 < n && n <= 11) 
+					if (0 <= n && n <= 11) 
 					{
 					    /* Deselect all tests */
 					    i = 0;

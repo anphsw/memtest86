@@ -586,6 +586,11 @@ void detect_imc(void)
 						v->fail_safe |= 4; // Disable Core temp
 					}
 					break;
+				case 0x7:
+					if(cpu_id.vers.bits.extendedModel == 3) {
+						imc_type = 0x000A;  // Atom Bay Trail
+					}
+					break;
 				case 0xA:
 					switch(cpu_id.vers.bits.extendedModel)
 					{
