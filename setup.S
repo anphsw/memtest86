@@ -34,6 +34,10 @@ reload:
 	movw	%dx, %sp
 	push	%cs
 	pop	%ds
+	xorl    %eax, %eax
+	movw    %cs, %ax
+	shll    $4, %eax
+	addl    %eax, gdt_48 - start + 2
 	lidt	idt_48 - start	# load idt with 0,0
 	lgdt	gdt_48 - start	# load gdt with whatever appropriate
 
@@ -144,7 +148,7 @@ idt_48:
 
 gdt_48:
 	.word	0x800		# gdt limit=2048, 256 GDT entries
-	.word	512+gdt - start,0x9	# gdt base = 0X9xxxx
+	.word   gdt - start,0   # gdt base
 
 msg1:
 	.asciz "Setup.S\r\n"
