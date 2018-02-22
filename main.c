@@ -40,6 +40,7 @@ extern void	rand_seed(unsigned int seed1, unsigned int seed2, int cpu);
 extern struct	barrier_s *barr;
 extern int 	num_cpus;
 extern int 	act_cpus;
+extern unsigned	smp_page;
 
 static int	find_ticks_for_test(int test);
 void		find_ticks_for_pass(void);
@@ -177,7 +178,8 @@ void btrace(int me, int line, char *msg, int wait, long v1, long v2)
 	/* Is tracing turned on? */
 	if (btflag == 0) return;
 
-	spin_lock(&barr->mutex);
+	if (barr)
+		spin_lock(&barr->mutex);
 	y = tidx%13;
 	x = tidx/13*40;
 	cplace(y+11, x+1, ' ');
@@ -196,7 +198,8 @@ void btrace(int me, int line, char *msg, int wait, long v1, long v2)
 	if (wait) {
 		wait_keyup();
 	}
-	spin_unlock(&barr->mutex);
+	if (barr)
+		spin_unlock(&barr->mutex);
 }
 
 /* Relocate the test to a new address. Be careful to not overlap! */
@@ -410,12 +413,12 @@ void test_start(void)
 		smp_set_ordinal(my_cpu_num, my_cpu_ord);
 		parse_command_line();
 		clear_screen();
-		/* Initialize the barrier so the lock in btrace will work.
-		 * Will get redone later when we know how many CPUs we have */
-		barrier_init(1);
 		btrace(my_cpu_num, __LINE__, "Begin     ", 1, 0, 0);
 		/* Find memory size */
-		 mem_size();	/* must be called before initialise_cpus(); */
+		mem_size();
+		/* Reserve highest basemem page for SMP locks and bootstrap */
+		smp_page = --v->pmap[0].end;
+		barrier_init(1);
 		/* Fill in the CPUID table */
 		get_cpuid();
 		/* Startup the other CPUs */
@@ -440,10 +443,6 @@ void test_start(void)
 			high_test_adr = 0x300000;
 		} 
 		win1_end = (high_test_adr >> 12);
-
-		/* Adjust the map to not test the page at 939k,
-		 *  reserved for locks */
-		v->pmap[0].end--;
 
 		find_ticks_for_pass();
        	    } else {

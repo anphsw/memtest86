@@ -27,6 +27,8 @@ extern int maxcpus;
 extern char cpu_mask[];
 extern struct cpu_ident cpu_id;
 
+unsigned smp_page;
+
 struct barrier_s *barr;
 
 void smp_find_cpus();
@@ -34,7 +36,7 @@ void smp_find_cpus();
 void barrier_init(int max)
 {
 	/* Set the adddress of the barrier structure */
-	barr = (struct barrier_s *)0x9ff00;
+	barr = (struct barrier_s *)((smp_page << 12) + 0x300);
         barr->lck.slock = 1;
         barr->mutex.slock = 1;
         barr->maxproc = max;
@@ -258,9 +260,9 @@ void kick_cpu(unsigned cpu_num)
 
 // These memory locations are used for the trampoline code and data.
 
-#define BOOTCODESTART 0x9000
-#define GDTPOINTERADDR 0x9100
-#define GDTADDR 0x9110
+#define BOOTCODESTART ((smp_page << 12))
+#define GDTPOINTERADDR (BOOTCODESTART + 0x100)
+#define GDTADDR (BOOTCODESTART + 0x110)
 
 void boot_ap(unsigned cpu_num)
 {
@@ -273,9 +275,6 @@ void boot_ap(unsigned cpu_num)
 
 
    memcpy((uint8_t*)BOOTCODESTART, &_ap_trampoline_start, len);
-
-   // Fixup the LGDT instruction to point to GDT pointer.
-   PUT_MEM16(BOOTCODESTART + 3, GDTPOINTERADDR);
 
    // Copy a pointer to the temporary GDT to addr GDTPOINTERADDR.
    // The temporary gdt is at addr GDTADDR

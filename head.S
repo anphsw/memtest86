@@ -806,7 +806,7 @@ idt_real:
 	.globl _ap_trampoline_protmode
 	.code16
 _ap_trampoline_start:
-	lgdt    0x0 /* will be fixed up later, see smp.c:BootAP()*/
+	cs lgdt    0x100 /* will be filled in by boot_ap() */
 	movl	%cr0, %eax
 	orl	$1, %eax
 	movl	%eax, %cr0
