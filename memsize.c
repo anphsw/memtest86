@@ -19,7 +19,6 @@ ulong p1, p2;
 ulong *p;
 
 static void sort_pmap(void);
-//static void memsize_bios(void);
 static void memsize_820(void);
 static void memsize_801(void);
 static int sanitize_e820_map(struct e820entry *orig_map,
@@ -150,15 +149,6 @@ static void memsize_820()
 			v->pmap[n].end = end >> 12;
 			v->test_pages += v->pmap[n].end - v->pmap[n].start;
 			n++;
-#if 0			
-	 		int epmap = 0;
-	 		int lpmap = 0;
-	 		if(n > 12) { epmap = 34; lpmap = -12; }
-			hprint (11+n+lpmap,0+epmap,v->pmap[n-1].start);
-			hprint (11+n+lpmap,10+epmap,v->pmap[n-1].end);
-			hprint (11+n+lpmap,20+epmap,v->pmap[n-1].end - v->pmap[n-1].start);
-			dprint (11+n+lpmap,30+epmap,nm[i].type,0,0);	
-#endif				
 		}
 	}
 	v->msegs = n;
@@ -201,6 +191,7 @@ static int sanitize_e820_map(struct e820entry *orig_map, struct e820entry *new_b
 	struct change_member {
 		struct e820entry *pbios; /* pointer to original bios entry */
 		unsigned long long addr; /* address for this change point */
+		short start;		 /* 0 = end addr, 1 = start addr */
 	};
 	struct change_member change_point_list[2*E820MAX];
 	struct change_member *change_point[2*E820MAX];
@@ -269,8 +260,11 @@ static int sanitize_e820_map(struct e820entry *orig_map, struct e820entry *new_b
 	chgidx = 0;
 	for (i=0; i < old_nr; i++)	{
 		change_point[chgidx]->addr = biosmap[i].addr;
+		change_point[chgidx]->start= 1;
 		change_point[chgidx++]->pbios = &biosmap[i];
+
 		change_point[chgidx]->addr = biosmap[i].addr + biosmap[i].size;
+		change_point[chgidx]->start= 0;
 		change_point[chgidx++]->pbios = &biosmap[i];
 	}
 
@@ -283,8 +277,8 @@ static int sanitize_e820_map(struct e820entry *orig_map, struct e820entry *new_b
 			/* or, if current=<start_addr> & last=<end_addr>, swap */
 			if ((change_point[i]->addr < change_point[i-1]->addr) ||
 				((change_point[i]->addr == change_point[i-1]->addr) &&
-				 (change_point[i]->addr == change_point[i]->pbios->addr) &&
-				 (change_point[i-1]->addr != change_point[i-1]->pbios->addr))
+				 (change_point[i]->start != 0) && // <current_addr> = <start_addr>
+				 (change_point[i-1]->start == 0)) // <last_addr> = <end_addr> 
 			   )
 			{
 				change_tmp = change_point[i];
@@ -304,7 +298,7 @@ static int sanitize_e820_map(struct e820entry *orig_map, struct e820entry *new_b
 	for (chgidx=0; chgidx < 2*old_nr; chgidx++)
 	{
 		/* keep track of all overlapping bios entries */
-		if (change_point[chgidx]->addr == change_point[chgidx]->pbios->addr)
+		if (change_point[chgidx]->start != 0) // if start addr
 		{
 			/* add map entry to overlap list (> 1 entry implies an overlap) */
 			overlap_list[overlap_entries++]=change_point[chgidx]->pbios;
