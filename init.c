@@ -56,6 +56,7 @@ extern int dmi_err_cnts[MAX_DMI_MEMDEVS];
 void failsafe(int msec, int scs)
 {
 	int i;
+	int pressed = 0;
 	ulong sh, sl, l, h, t;
 	unsigned char c;
 	volatile char *pp;
@@ -70,11 +71,11 @@ void failsafe(int msec, int scs)
 		*pp = 0x9E;
 	}	
 	
-	cprint(18, 18, "==> Press F1 to enter Fail-Safe Mode <==");
-	
+	cprint(18, 18, "=> Press 1/F1 to enter Fail-Safe Mode <=");
+
 	if(v->fail_safe & 2)
 	{
-	cprint(19, 15, "==> Press F2 to force Multi-Threading (SMP) <==");				
+	cprint(19, 15, "=> Press 2/F2 to force Multi-Threading (SMP) <=");
 	}
 
 	/* save the starting time */
@@ -82,7 +83,7 @@ void failsafe(int msec, int scs)
 		"rdtsc":"=a" (sl),"=d" (sh));
 
 	/* loop for n seconds */
-	while (1) {
+	while (!pressed) {
 		asm __volatile__(
 			"rdtsc":"=a" (l),"=d" (h));
 		asm __volatile__ (
@@ -97,30 +98,46 @@ void failsafe(int msec, int scs)
 
 		/* Is the time up? */
 		if (t >= msec) { break;	}
-		
+
 		/* Is expected Scan code pressed? */
 		c = get_key();
-		c &= 0x7f;
-		
-		/* F1 */
-		if(c == scs) { v->fail_safe |= 1;	break; }
-					
-		/* F2 */
-		if(c == scs+1) 
-		{ 
-			v->fail_safe ^= 2;
-			break;
 
-		}
-		
-		/* F3 */
-		if(c == scs+2) 
-		{ 
+		/* Serial console / Numeric keys */
+		switch(c - 1) {		/* Numeric key base */
+		    case 1: /* 1 */
+			v->fail_safe |= 1;
+			pressed++;
+			break;
+		    case 2: /* 2 */
+			v->fail_safe ^= 2;
+			pressed++;
+			break;
+		    case 3: /* 3 */
 			if(v->fail_safe & 2) { v->fail_safe ^= 2; }
 			v->fail_safe |= 8;
+			pressed++;
 			break;
-		}				
-			
+		}
+
+		c &= 0x7f;
+		c -= scs;
+
+		/* Function keys */
+		switch(c + 1) {		/* Function key base */
+		    case 1: /* F1 */
+			v->fail_safe |= 1;
+			pressed++;
+			break;
+		    case 2: /* F2 */
+			v->fail_safe ^= 2;
+			pressed++;
+			break;
+		    case 3: /* F3 */
+			if(v->fail_safe & 2) { v->fail_safe ^= 2; }
+			v->fail_safe |= 8;
+			pressed++;
+			break;
+		}
 	}
 	
 	cprint(18, 18, "                                          ");
