@@ -15,11 +15,11 @@
 
 int slock = 0, lsr = 0;
 short serial_cons = SERIAL_CONSOLE_DEFAULT;
-#if SERIAL_TTY != 0 && SERIAL_TTY != 1
-#error Bad SERIAL_TTY. Only ttyS0 and ttyS1 are supported.
+#if SERIAL_TTY < 0 || SERIAL_TTY > 3
+#error Bad SERIAL_TTY. Only ttyS0 thru ttyS3 are supported.
 #endif
 short serial_tty = SERIAL_TTY;
-const short serial_base_ports[] = {0x3f8, 0x2f8};
+const short serial_base_ports[] = {0x3f8, 0x2f8, 0x3e8, 0x2e8};
 
 #if ((115200%SERIAL_BAUD_RATE) != 0)
 #error Bad default baud rate
