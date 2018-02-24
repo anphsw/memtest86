@@ -388,14 +388,14 @@ void show_spd(void)
     int index;
     int i, j;
     int flag = 0;
-    pop2up();
+    popup(POP_SAVE_BUFFER_2);
     wait_keyup();
     index = find_smb_controller();
     if (index == -1) {
 	cprint(POP2_Y, POP2_X+1, "SMBus Controller not known");
 	while (!get_key());
 	wait_keyup();
-	pop2down();
+	popdown(POP_SAVE_BUFFER_2);
 	return;
     }
     else cprint(POP2_Y, POP2_X+1, "SPD Data: Slot");    
@@ -413,7 +413,7 @@ void show_spd(void)
 	    wait_keyup();
 	}
     }
-    pop2down();
+    popdown(POP_SAVE_BUFFER_2);
 }
 
 int get_ddr3_module_size(int sdram_capacity, int prim_bus_width, int sdram_width, int ranks)

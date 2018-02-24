@@ -300,7 +300,7 @@ void print_dmi_info(void){
 	}
 
 	for(page=1; page <= 1 + (mem_devs_count-1)/8; page++){
-		pop2clear();
+		popdown(POP_SAVE_BUFFER_2);
 		cprint(POP2_Y+1, POP2_X+2, "DMI Memory Device Info  (page ");
 		itoa(string,page);
 		cprint(POP2_Y+1, POP2_X+32, string);

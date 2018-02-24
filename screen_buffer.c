@@ -111,6 +111,7 @@ void tty_print_screen(void)
         ttyprint(i,0, padding);
 #endif /* SCRN_DEBUG */
 
+//    clear_screen_buf();
     tty_print_region(0, 0, SCREEN_Y, SCREEN_X);
 }
 

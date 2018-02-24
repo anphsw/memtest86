@@ -148,12 +148,13 @@ void check_input(void);
 void footer(void);
 void scroll(void);
 void clear_scroll(void);
-void popup(void);
-void popdown(void);
-void popclear(void);
-void pop2up(void);
-void pop2down(void);
-void pop2clear(void);
+extern char pop_save_buffer_1[2][POP_H][POP_W];
+extern char pop_save_buffer_2[2][POP2_H][POP2_W];
+#define POP_SAVE_BUFFER_1 POP_X, POP_Y, POP_H, POP_W, pop_save_buffer_1
+#define POP_SAVE_BUFFER_2 POP_X, POP_Y, POP_H, POP_W, pop_save_buffer_2
+void popup(int pop_x, int pop_y, int pop_h, int pop_w, char pop_save_buffer[2][pop_h][pop_w]);
+void popdown(int pop_x, int pop_y, int pop_h, int pop_w, char pop_save_buffer[2][pop_h][pop_w]);
+void popclear(int pop_x, int pop_y, int pop_h, int pop_w, char pop_save_buffer[2][pop_h][pop_w]);
 void get_config(void);
 void get_menu(void);
 void get_printmode(void);
