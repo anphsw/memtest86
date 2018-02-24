@@ -1149,7 +1149,7 @@ void serial_console_setup(char *param)
 
 	end++;
 
-	if (*end != '\0' || *end != ' ')
+	if (*end != '\0' && *end != ' ')
 		return;  /* garbage at the end */
 
 	serial_bits = bits;
