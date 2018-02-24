@@ -399,7 +399,12 @@ void popup(int pop_x, int pop_y, int pop_h, int pop_w, char pop_save_buffer[2][p
 		for (j=pop_x; j<pop_x + pop_w; j++) {
 			/* Point to the write position in the screen */
 			pp = (char *)(SCREEN_ADR + (i * 160) + (j * 2));
-                        pop_save_buffer[0][i-pop_y][j-pop_x] = *pp;  /* Save screen */
+
+			/* pp and get_scrn_buf(i,j) should be equal here
+			 * except on board that don't have screen (e.g. only serial port)
+			 * that's why we save the screen buffer :
+			 * save screen buffer */
+                        pop_save_buffer[0][i-pop_y][j-pop_x] = get_scrn_buf(i,j);
 			*pp = ' ';		/* Clear screen */
                         set_scrn_buf(i, j, ' '); /* Clear screen buffer */
 			pp++;
