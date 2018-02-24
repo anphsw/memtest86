@@ -115,4 +115,21 @@ __OUTS(l)
 ((__builtin_constant_p((port)) && (port) < 256) ? \
 	__inlc(port) : \
 	__inl(port))
+
+static __inline unsigned char
+inb_p (unsigned short int __port)
+{
+	  unsigned char _v;
+
+	    __asm__ __volatile__ ("inb %w1,%0\noutb %%al,$0x80":"=a" (_v):"Nd" (__port));
+	      return _v;
+}
+
+static __inline void
+outb_p (unsigned char __value, unsigned short int __port)
+{
+	  __asm__ __volatile__ ("outb %b0,%w1\noutb %%al,$0x80": :"a" (__value),
+			                          "Nd" (__port));
+}
+
 #endif

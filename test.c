@@ -14,7 +14,7 @@
 #include "stdint.h"
 #include "cpuid.h"
 #include "smp.h"
-#include <sys/io.h>
+#include "io.h"
 
 extern struct cpu_ident cpu_id;
 extern volatile int    mstr_cpu;

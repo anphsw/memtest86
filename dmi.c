@@ -10,7 +10,7 @@
 
 
 #include "test.h"
-#include <stdint.h>
+#include "stdint.h"
 
 
 #define round_up(x,y) (((x) + (y) - 1) & ~((y)-1))
