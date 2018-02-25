@@ -331,7 +331,7 @@ void init(void)
 	if(v->check_temp > 0 && !(v->fail_safe & 4))
 	{
 		cprint(LINE_CPU, 26, "|  CPU Temp");
-		cprint(LINE_CPU+1, 26, "|      øC");
+		cprint(LINE_CPU+1, 26, "|      ^C");
 	}
 	
 		beep(600);
