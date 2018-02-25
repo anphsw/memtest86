@@ -603,30 +603,23 @@ void set_cache(int val)
 int get_key() {
 	int c;
 
-/*	c = inb(0x64);
-	itoa(test, c);
-	serial_echo_print("aa");
-	serial_echo_print(test);
-	serial_echo_print("aa");
-
-	if ((c & 1) == 0) {
-		serial_echo_print("bbbbb");*/
-//		if (serial_cons) {
-			int comstat;
-			comstat = serial_echo_inb(UART_LSR);
-			if (comstat & UART_LSR_DR) {
-				c = serial_echo_inb(UART_RX);
-				/* Pressing '.' has same effect as 'c'
-				   on a keyboard.
-				   Oct 056   Dec 46   Hex 2E   Ascii .
-				*/
-				return (ascii_to_keycode(c));
-			}
-//		}
-		return(0);
-/*	}
-	c = inb(0x60);
-	return((c));*/
+	c = inb(0x64);
+	if (c & 0x01) {
+		c = inb(0x60);
+		return((c));
+	} else if (serial_cons) {
+		int comstat;
+		comstat = serial_echo_inb(UART_LSR);
+		if (comstat & UART_LSR_DR) {
+			c = serial_echo_inb(UART_RX);
+			/* Pressing '.' has same effect as 'c'
+			   on a keyboard.
+			   Oct 056   Dec 46   Hex 2E   Ascii .
+			*/
+			return (ascii_to_keycode(c));
+		}
+	}
+	return(0);
 }
 
 void check_input(void)
