@@ -172,7 +172,7 @@ void amd64_option()
 			switch(get_key())
 			{
 			case 2:
-				popclear();
+				popclear(POP_SAVE_BUFFER_1);
 				// read-to-write delay
 				cprint(POP_Y+3, POP_X+4, "Rd-Wr delay ");
 				cprint(POP_Y+4, POP_X+4, " (2 - 6 cycles)");
@@ -184,7 +184,7 @@ void amd64_option()
 				break;
 
 			case 3:
-				popclear();
+				popclear(POP_SAVE_BUFFER_1);
 				// read-to-write delay
 				cprint(POP_Y+3, POP_X+4, "Wr-Rd delay ");
 				cprint(POP_Y+4, POP_X+4, " (1 - 2 cycles)");
@@ -196,7 +196,7 @@ void amd64_option()
 				break;
 
 			case 4:
-				popclear();
+				popclear(POP_SAVE_BUFFER_1);
 				// Read write queue bypass count
 				cprint(POP_Y+3, POP_X+4, "Rd/Wr bypass ");
 				cprint(POP_Y+4, POP_X+4, " (2, 4 or 8 )");
@@ -208,7 +208,7 @@ void amd64_option()
 				break;
 
 			case 5:
-				popclear();
+				popclear(POP_SAVE_BUFFER_1);
 				// refresh rate
 				cprint(POP_Y+3, POP_X+4, "Refresh rate ");
 				cprint(POP_Y+4, POP_X+4, "Current: ");
@@ -226,7 +226,7 @@ void amd64_option()
 				break;
 
 			case 6:
-				popclear();
+				popclear(POP_SAVE_BUFFER_1);
 				//Enable 2T command and addressing
 				cprint(POP_Y+3, POP_X+4, "Command rate:");
 				cprint(POP_Y+5, POP_X+4, "(1) 1T "); //only supoprted by CG revision and later
@@ -236,7 +236,7 @@ void amd64_option()
 				break;
 
 			case 7:
-				popclear();
+				popclear(POP_SAVE_BUFFER_1);
 				//Row cycle time
 				cprint(POP_Y+3, POP_X+4, "Row cycle time: ");
 				cprint(POP_Y+4, POP_X+4, " (7 - 20 cycles)");
@@ -248,7 +248,7 @@ void amd64_option()
 				break;
 
 			case 8:
-				popclear();
+				popclear(POP_SAVE_BUFFER_1);
 				//Active-to-Active RAS Delay
 				cprint(POP_Y+3, POP_X+4, "RAS-RAS Delay: ");
 				cprint(POP_Y+4, POP_X+4, " (2 - 4 cycles)");
@@ -260,7 +260,7 @@ void amd64_option()
 				break;
 
 			case 9:
-				popclear();
+				popclear(POP_SAVE_BUFFER_1);
 				//Active-to-Active RAS Delay
 				cprint(POP_Y+3, POP_X+4, "Write Recovery: ");
 				cprint(POP_Y+4, POP_X+4, " (2 - 3 cycles)");
@@ -290,33 +290,33 @@ void get_option()
 		switch(get_key())
 		{
 		case 2:
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 			cas = get_cas();
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 
 			cprint(POP_Y+3, POP_X+8, "tRCD: ");
 			rcd = getval(POP_Y+3, POP_X+15, 0);
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 
 			cprint(POP_Y+3, POP_X+8, "tRP: ");
 			rp = getval(POP_Y+3, POP_X+15, 0);
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 
 			cprint(POP_Y+3, POP_X+8, "tRAS: ");
 			ras = getval(POP_Y+3, POP_X+15, 0);
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 			change_timing(cas, rcd, rp, ras);
 			break;
 
 		case 3:
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 			cas = get_cas();
 			change_timing(cas, 0, 0, 0);
 			sflag++;
 			break;
 
 		case 4:
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 			cprint(POP_Y+3, POP_X+8, "tRCD: ");
 			rcd =getval(POP_Y+3, POP_X+15, 0);
 			change_timing(0, rcd, 0, 0);
@@ -324,7 +324,7 @@ void get_option()
 			break;
 
 		case 5:
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 			cprint(POP_Y+3, POP_X+8, "tRP: ");
 			rp =getval(POP_Y+3, POP_X+15, 0);
 			change_timing(0, 0, rp, 0);
@@ -332,7 +332,7 @@ void get_option()
 			break;
 
 		case 6:
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 			cprint(POP_Y+3, POP_X+8, "tRAS: ");
 			ras =getval(POP_Y+3, POP_X+15, 0);
 			change_timing(0, 0, 0, ras);
@@ -340,10 +340,10 @@ void get_option()
 			break;
 
 		case 7:
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 			amd64_option();
 			sflag++;
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 			break;
 
 		case 8:
@@ -367,47 +367,47 @@ void get_option_1()
 		switch(get_key())
 		{
 		case 2:
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 			cprint(POP_Y+3, POP_X+8, "tRCD: ");
 			rcd = getval(POP_Y+3, POP_X+15, 0);
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 
 			cprint(POP_Y+3, POP_X+8, "tRP: ");
 			rp = getval(POP_Y+3, POP_X+15, 0);
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 
 			cprint(POP_Y+3, POP_X+8, "tRAS: ");
 			ras = getval(POP_Y+3, POP_X+15, 0);
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 			change_timing(0, rcd, rp, ras);
 			break;
 
 		case 3:
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 			cprint(POP_Y+3, POP_X+8, "tRCD: ");
 			rcd =getval(POP_Y+3, POP_X+15, 0);
 			change_timing(0, rcd, 0, 0);
 			break;
 
 		case 4:
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 			cprint(POP_Y+3, POP_X+8, "tRP: ");
 			rp =getval(POP_Y+3, POP_X+15, 0);
 			change_timing(0, 0, rp, 0);
 			break;
 
 		case 5:
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 			cprint(POP_Y+3, POP_X+8, "tRAS: ");
 			ras =getval(POP_Y+3, POP_X+15, 0);
 			change_timing(0, 0, 0, ras);
 			break;
 
 		case 6:
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 			amd64_option();
 			sflag++;
-			popclear();
+			popclear(POP_SAVE_BUFFER_1);
 			break;
 
 		case 7:
@@ -443,7 +443,7 @@ void get_menu(void)
 
 	if (menu == -1)
 	{
-		popclear();
+		popclear(POP_SAVE_BUFFER_1);
 	}
 	else if (menu == 0)
 	{
@@ -531,7 +531,7 @@ int get_cas(void)
 		cas = -1;
 	}
 
-	popclear();
+	popclear(POP_SAVE_BUFFER_1);
 	return (cas);
 }
 
