@@ -58,9 +58,6 @@ test.o: test.c
 random.o: random.c
 	$(CC) -c -Wall -march=i486 -m32 -O3 -fomit-frame-pointer -fno-builtin -ffreestanding random.c
 	
-# rule for build number generation  
-build_number:
-	sh make_buildnum.sh  
 
 clean:
 	rm -f *.o *.s *.iso memtest.bin memtest memtest_shared \
@@ -73,8 +70,5 @@ iso:
 install: all
 	dd <memtest.bin >$(FDISK) bs=8192
 
-install-precomp:
-	dd <precomp.bin >$(FDISK) bs=8192
-	
 dos: all
 	cat mt86+_loader memtest.bin > memtest.exe
