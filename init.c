@@ -1023,8 +1023,10 @@ void cpu_type(void)
 		switch(cpu_id.vers.bits.family) {
 		case 5:
 			cprint(0, COL_MID, "586");
+			break;
 		case 6:
 			cprint(0, COL_MID, "686");
+			break;
 		default:
 			cprint(0, COL_MID, "Unidentified Processor");
 		}
