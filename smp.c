@@ -157,7 +157,7 @@ SEND_IPI(unsigned apic_id, unsigned trigger, unsigned level, unsigned mode,
 void delay(unsigned us) 
 {
    unsigned freq = 1000; // in MHz, assume 1GHz CPU speed
-   uint64_t cycles = us * freq;
+   uint64_t cycles = (uint64_t)us * freq;
    uint64_t t0 = RDTSC();
    uint64_t t1;
    volatile unsigned k;
