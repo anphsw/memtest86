@@ -47,7 +47,7 @@ void get_config()
 		cprint(POP_Y+7,  POP_X+6, "(5) Refresh Screen");
 		cprint(POP_Y+8,  POP_X+6, "(6) Display DMI Data");
 		cprint(POP_Y+9,  POP_X+6, "(7) Display SPD Data");
-		cprint(POP_Y+11, POP_X+6,	"(0) Continue");
+		cprint(POP_Y+11, POP_X+6, "(0) Continue");
 
 		/* Wait for key release */
 		/* Fooey! This nuts'es up the serial input. */
@@ -92,8 +92,8 @@ void get_config()
 						"Test Selection:");
 					cprint(POP_Y+4, POP_X+5,
 						"Test Number [1-11]: ");
-					n = getval(POP_Y+4, POP_X+24, 0) - 1;
-					if (0 <= n && n <= 11) 
+					n = getval(POP_Y+4, POP_X+24, 0);
+					if (0 <= n && n <= MAX_TEST_NUMBER) 
 					{
 					    /* Deselect all tests */
 					    i = 0;
@@ -111,6 +111,7 @@ void get_config()
 					    while (tseq[i].cpu_sel) {
 						tseq[i].sel = 1;
 						i++;
+					    test = 0;
 					    }
 					}
 					find_ticks_for_pass();
