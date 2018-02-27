@@ -1719,7 +1719,7 @@ static void poll_fsb_k15(void) {
 
 	unsigned long temp2;
 	unsigned long dramchr;
-	double dramratio, dramclock, fsb;
+	double dramclock, fsb;
 	unsigned int mcgsrl,mcgsth, fid, did;
 	 
 	// Get current FID & DID
@@ -1740,34 +1740,37 @@ static void poll_fsb_k15(void) {
 	temp2 = (dramchr & 0x1F);
 
 	switch (temp2) {
+		case 0x02:
+			dramclock = 200;
+		break;
 		case 0x04: 
-			dramratio = 10.0f / 3.0f; 
+			dramclock = 333;
 			break;
-		default:
 		case 0x06: 
-			dramratio = 4.0f; 
+			dramclock = 400;
 			break;
 		case 0x0A: 
-			dramratio = 16.0f / 3.0f; 
+			dramclock = 533;
 			break;
 		case 0x0E: 
-			dramratio = 20.0f / 3.0f; 
+			dramclock = 667;
 			break;
 		case 0x12: 
-			dramratio = 8.0f; 
+			dramclock = 800;
 			break;
 		case 0x16: 
-			dramratio = 28.0f / 3.0f; 
-			break;						
+			dramclock = 933;
+			break;
 		case 0x1A: 
-			dramratio = 32.0f / 3.0f; 
-			break;	
+			dramclock = 1066; 
+			break;
 		case 0x1F: 
-			dramratio = 36.0f / 3.0f; 
-			break;				
+			dramclock = 1200; 
+			break;
+		default:
+			dramclock = 0;
+		break;
 	}	
-	
-	dramclock = fsb * dramratio;
 	
 	/* print */
 	print_cpu_line(dramclock, fsb, 3);
