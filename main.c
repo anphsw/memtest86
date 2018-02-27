@@ -52,7 +52,7 @@ int		do_test(int ord);
 struct tseq tseq[] = {
 	/* sel, cpu_sel, pat, iter, errors, msg */
 	{1, 32,  0,   6, 0, "[Address test, walking ones, no cache] "},
-	{1, 32,  1,   6, 0, "[Address test, own address Sequential] "},
+	{1, -1,  1,   6, 0, "[Address test, own address Sequential] "},
 	{1, 32,  2,   6, 0, "[Address test, own address Parallel]   "},
 	{1, 32,  3,   6, 0, "[Moving inversions, 1s & 0s Parallel]  "},
 	{1, 32,  4,   6, 0, "[ *** Test is missing! *** ]           "},
