@@ -7,6 +7,7 @@
 #define AMD_INDEX_IO_PORT	0xCD6
 #define AMD_DATA_IO_PORT	0xCD7
 #define AMD_SMBUS_BASE_REG	0x2C
+#define AMD_PM_DECODE_EN_REG	0x00
  
 void get_spd_spec(void);
 int get_ddr2_module_size(int rank_density_byte, int rank_num_byte);

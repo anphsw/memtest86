@@ -55,8 +55,21 @@ static void piix4_get_smb(void)
 
 void sb800_get_smb(void)
 {
-	  int lbyte, hbyte;
-	
+	int lbyte, hbyte, result;
+	unsigned long x;
+
+	result = pci_conf_read(0, smbdev, smbfun, 0x08, 1, &x);
+
+	/* if processor revision is ML_A0 or ML_A1 use different way for SMBus
+	 * IO base calculation */
+	if (x == 0x42 || x == 0x41) {
+		/* read PMx00+1 to get SmbusAsfIoBase */
+		__outb(AMD_PM_DECODE_EN_REG+1, AMD_INDEX_IO_PORT);
+		lbyte = __inb(AMD_DATA_IO_PORT);
+
+		/* SMBus IO base is defined as {Smbus0AsfIoBase[7:0], 0x00} */
+		smbusbase = (lbyte & 0xF) << 8;
+	} else {
 		__outb(AMD_SMBUS_BASE_REG + 1, AMD_INDEX_IO_PORT);	
 		lbyte = __inb(AMD_DATA_IO_PORT);
 		__outb(AMD_SMBUS_BASE_REG, AMD_INDEX_IO_PORT);	
@@ -66,8 +79,9 @@ void sb800_get_smb(void)
 		smbusbase <<= 8;
 		smbusbase += hbyte;
 		smbusbase &= 0xFFE0;
-		
-		if (smbusbase == 0xFFE0)	{ smbusbase = 0; }	
+	}
+
+	if (smbusbase == 0xFFE0)	{ smbusbase = 0; }
 }
 
 unsigned char ich5_smb_read_byte(unsigned char adr, unsigned char cmd)
