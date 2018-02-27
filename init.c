@@ -46,6 +46,7 @@ static void get_cache_size();
 static void cpu_cache_speed();
 void get_cpuid();
 int beepmode;
+int conservative_smp = CONSERVATIVE_SMP;
 extern short dmi_initialized;
 extern int dmi_err_cnts[MAX_DMI_MEMDEVS];
 
@@ -663,7 +664,7 @@ void smp_default_mode(void)
   }
   
   // For 5.01 release, SMP disabled by defualt by config.h toggle
-  if(CONSERVATIVE_SMP) { v->fail_safe |= 0b10; }
+  if(conservative_smp) { v->fail_safe |= 0b10; }
   	
 }
 

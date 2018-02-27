@@ -41,6 +41,7 @@ extern struct	barrier_s *barr;
 extern int 	num_cpus;
 extern int 	act_cpus;
 extern unsigned	smp_page;
+extern int	conservative_smp;
 
 static int	find_ticks_for_test(int test);
 void		find_ticks_for_pass(void);
@@ -313,6 +314,11 @@ static void parse_command_line(void)
 		if (!strncmp(cp, "maxcpus=", 8)) {
 			cp += 8;
 			maxcpus=(int)simple_strtoul(cp, &dummy, 10);
+		}
+		/* Allow SMP to be enabled by default */
+		if (!strncmp(cp, "smp", 3)) {
+			cp += 3;
+			conservative_smp = 0;
 		}
 		/* Run one pass and exit if there are no errors */
 		if (!strncmp(cp, "onepass", 7)) {
