@@ -2720,7 +2720,6 @@ static void poll_fsb_wmr(void) {
 	pci_conf_read( 0, 0, 0, 0x48, 4, &dev0);
 	dev0 &= 0xFFFFC000;
 	ptr=(long*)(dev0+0x2C20);
-	dramratio = 1;
 	
 	/* Get the clock ratio */
 	dramratio = 0.25 * (float)(*ptr & 0x1F);
@@ -2805,7 +2804,6 @@ static void poll_fsb_snbe(void) {
 	/* Find dramratio */
 	pci_conf_read( 0xFF, 10, 1, 0x98, 4, &dev0);
 	dev0 &= 0xFFFFFFFF;
-	dramratio = 1;
 	
 	/* Get the clock ratio */
 	dramratio = (float)(dev0 & 0x3F) * (66.67f / 100.0f);
@@ -3407,7 +3405,7 @@ static void poll_timings_i855(void) {
 
 	ulong drt, temp;
 	float cas;
-	int rcd, rp, ras;
+	int rcd, rp, ras = 0;
 	
 	pci_conf_read( 0, 0, 0, 0x78, 4, &drt);
 
@@ -3432,9 +3430,12 @@ static void poll_timings_i855(void) {
 
 	// RAS Active to precharge (tRAS)
 	temp = 7-((drt >> 9)& 0x3);
+	// FIXME: this code is clearly wrong, as the above sets temp to
+	//   4..7 and the below checks for 0..2.
+	// Need a datasheet to determine which part is right.
 	if (temp == 0x0) { ras = 7; }
-	if (temp == 0x1) { ras = 6; }
-	if (temp == 0x2) { ras = 5; }
+	else if (temp == 0x1) { ras = 6; }
+	else if (temp == 0x2) { ras = 5; }
 	
 	print_ram_line(cas, rcd, rp, ras, 1);
 
@@ -3486,21 +3487,21 @@ static void poll_timings_i852(void) {
 	// RAS-To-CAS (tRCD)
 	temp = ((drt >> 2)& 0x3);
 	if (temp == 0x0) { rcd = 4; }
-	if (temp == 0x1) { rcd = 3; }
+	else if (temp == 0x1) { rcd = 3; }
 	else { rcd = 2; }
 
 	// RAS Precharge (tRP)
 	temp = (drt&0x3);
 	if (temp == 0x0) { rp = 4; }
-	if (temp == 0x1) { rp = 3; }
+	else if (temp == 0x1) { rp = 3; }
 	else { rp = 2; }
 
 	// RAS Active to precharge (tRAS)
 	temp = ((drt >> 9)& 0x3);
 	if (temp == 0x0) { ras = 8; }
-	if (temp == 0x1) { ras = 7; }
-	if (temp == 0x2) { ras = 6; }
-	if (temp == 0x3) { ras = 5; }
+	else if (temp == 0x1) { ras = 7; }
+	else if (temp == 0x2) { ras = 6; }
+	else if (temp == 0x3) { ras = 5; }
 
 	print_ram_line(cas, rcd, rp, ras, 1);
 
@@ -3510,7 +3511,7 @@ static void poll_timings_amd64(void) {
 
 	ulong dramtlr, dramclr;
 	int temp, chan;
-	float tcas;
+	float tcas = 0.0;
 	int trcd, trp, tras ;
 
 	pci_conf_read(0, 24, 2, 0x88, 4, &dramtlr);
@@ -3544,8 +3545,8 @@ static void poll_timings_amd64(void) {
 			// CAS Latency (tCAS)
 			temp = (dramtlr & 0x7);
 			if (temp == 0x1) { tcas = 2; }
-			if (temp == 0x2) { tcas = 3; }
-			if (temp == 0x5) { tcas = 2.5; }
+			else if (temp == 0x2) { tcas = 3; }
+			else if (temp == 0x5) { tcas = 2.5; }
 		
 			// RAS-To-CAS (tRCD)
 			trcd = ((dramtlr >> 12) & 0x7);
@@ -3609,7 +3610,7 @@ static void poll_timings_k10(void) {
 
 static void poll_timings_k12(void) {
 
-	ulong dramt0, dramlow, dimma, dimmb;
+	ulong dramt0 = 0, dramlow = 0, dimma, dimmb;
 	int cas, rcd, rp, ras, chan = 0;
 	
 	pci_conf_read(0, 24, 2, 0x94, 4, &dimma);
@@ -3716,7 +3717,7 @@ static void poll_timings_nf2(void) {
 
 	ulong dramtlr, dramtlr2, dramtlr3, temp;
 	ulong dimm1p, dimm2p, dimm3p;
-	float cas;
+	float cas = 0.0;
 	int rcd, rp, ras, chan;
 	
 	pci_conf_read(0, 0, 1, 0x90, 4, &dramtlr);
@@ -3729,8 +3730,8 @@ static void poll_timings_nf2(void) {
 	// CAS Latency (tCAS)
 	temp = ((dramtlr2 >> 4) & 0x7);
 	if (temp == 0x2) { cas = 2; }
-	if (temp == 0x3) { cas = 3; }
-	if (temp == 0x6) { cas = 2.5; }
+	else if (temp == 0x3) { cas = 3; }
+	else if (temp == 0x6) { cas = 2.5; }
 		
 	// RAS-To-CAS (tRCD)
 	rcd = ((dramtlr >> 20) & 0xF);
