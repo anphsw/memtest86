@@ -4,7 +4,7 @@
  * http://www.canardpc.com - http://www.memtest.org
  */
 
- 
+#include "stdint.h" 
 #include "test.h"
 #include "io.h"
 #include "pci.h"
@@ -73,7 +73,9 @@ void sb800_get_smb(void)
 unsigned char ich5_smb_read_byte(unsigned char adr, unsigned char cmd)
 {
     int l1, h1, l2, h2;
-    unsigned long long t;
+    uint64_t t;
+    uint64_t toval = 10 * v->clks_msec;
+
     __outb(0x1f, SMBHSTSTS);			// reset SMBus Controller
     __outb(0xff, SMBHSTDAT);
     while(__inb(SMBHSTSTS) & 0x01);		// wait until ready
@@ -84,8 +86,8 @@ unsigned char ich5_smb_read_byte(unsigned char adr, unsigned char cmd)
     //cprint(POP2_Y, POP2_X + 16, s + cmd % 8);	// progress bar
     while (!(__inb(SMBHSTSTS) & 0x02)) {	// wait til command finished
 			rdtsc(l2, h2);
-			t = ((h2 - h1) * 0xffffffff + (l2 - l1)) / v->clks_msec;
-			if (t > 10) break;			// break after 10ms
+			t = ((uint64_t)(h2 - h1) * 0xffffffff + (l2 - l1));
+			if (t > toval) break;			// break after 10ms
     }
     return __inb(SMBHSTDAT);
 }
@@ -112,7 +114,9 @@ static void us15w_get_smb(void)
 unsigned char us15w_smb_read_byte(unsigned char adr, unsigned char cmd)
 {
     int l1, h1, l2, h2;
-    unsigned long long t;
+    uint64_t t;
+    uint64_t toval = 10 * v->clks_msec;
+
     //__outb(0x00, smbusbase + 1);			// reset SMBus Controller
     //__outb(0x00, smbusbase + 6);
     //while((__inb(smbusbase + 1) & 0x08) != 0);		// wait until ready
@@ -127,8 +131,8 @@ unsigned char us15w_smb_read_byte(unsigned char adr, unsigned char cmd)
     while (((__inb(smbusbase + 1) & 0x01) == 0) ||
 		((__inb(smbusbase + 1) & 0x08) != 0)) {	// wait til command finished
 	rdtsc(l2, h2);
-	t = ((h2 - h1) * 0xffffffff + (l2 - l1)) / v->clks_msec;
-	if (t > 10) break;			// break after 10ms
+	t = ((uint64_t)(h2 - h1) * 0xffffffff + (l2 - l1));
+	if (t > toval) break;			// break after 10ms
     }
     return __inb(smbusbase + 6);
 }
