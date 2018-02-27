@@ -48,34 +48,27 @@ inline void reboot(void)
 	}
 }
 
-int strlen(char * string){
-	int i=0;
-	while(*string++){i++;};
+int strlen(const char *string)
+{
+	int i = 0;
+
+	while (*string++)
+		i++;
 	return i;
 }
 
-int strstr(char *haystack, char * needle)
+int strstr(const char *haystack, const char *needle)
 {
-	int i=0,j=0;
-	int here=0;
-	while(1){
-		if(needle[i]==haystack[j])
-		{
-			if(here==0)
-				here=j;
-				i++;j++;
-				if(i>=strlen(needle))
-				{
-					return here;
-				}
-				if(j>=strlen(haystack))
-				{
-					return -1;
-				}
-		} else {
-			j++;i=0;here=0;
-		}
+	int haystack_len = strlen(haystack);
+	int needle_len = strlen(needle);
+	int max_idx = haystack_len - needle_len;
+	int idx;
+
+	for (idx = 0; idx <= max_idx; idx++) {
+		if (memcmp(haystack + idx, needle, needle_len) == 0)
+			return idx;
 	}
+	return -1;
 }
 
 int memcmp(const void *s1, const void *s2, ulong count)
