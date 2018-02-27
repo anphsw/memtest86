@@ -642,9 +642,12 @@ void check_input(void)
 			break;
 		case 0x26:
 			/* ^L/L - redraw the display */
-		        clear_screen_buf();
-    tty_print_region(0, 0, 80,100);
-//			tty_print_screen();
+			if (serial_cons) {
+				tty_print_screen();
+			} else {
+				clear_screen_buf();
+				tty_print_region(0, 0, 80, 100);
+			}
 			break;
 		}
 	}
