@@ -25,7 +25,7 @@ extern int num_cpus;
 
 static void update_err_counts(void);
 static void print_err_counts(void);
-static void common_err();
+static void common_err(ulong *adr, ulong good, ulong bad, ulong xor, int type);
 static int syn, chan, len=1;
 
 /*
@@ -624,4 +624,3 @@ void do_tick(int me)
 	poll_errors();
 */
 }
-
