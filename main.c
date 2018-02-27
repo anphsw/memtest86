@@ -752,7 +752,7 @@ void test_start(void)
 
 	    /* If this was the last test then we finished a pass */
 	  if (pass_flag) 
-	  	{
+	  {
 			pass_flag = 0;
 			
 			v->pass++;
@@ -766,7 +766,13 @@ void test_start(void)
 			    /* If onepass is enabled and we did not get any errors
 			     * reboot to exit the test */
 			    if (onepass) {	reboot();   }
-			    if (!btflag) cprint(LINE_MSG, COL_MSG-8, "** Pass complete, no errors, press Esc to exit **");
+			    if (!btflag && v->pass > 0) {
+				cprint(LINE_MSG, COL_MSG-8, "** Pass complete, no errors, press Esc to exit **");
+			    }
+			    if (!btflag && v->pass <= 0) {
+				cprint(LINE_MSG, COL_MSG-8, "                                                 ");
+			    }
+
 					if(BEEP_END_NO_ERROR) 
 						{
 							beep(1000);
