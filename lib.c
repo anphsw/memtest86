@@ -35,6 +35,11 @@ struct ascii_map_str {
 
 inline void reboot(void)
 {
+
+	if (serial_cons) {
+	    serial_echo_print("[H[2J");
+	    serial_echo_print("Reboot requested...");
+	}
 	
 	/* tell the BIOS to do a cold start */
 	*((unsigned short *)0x472) = 0x0;
