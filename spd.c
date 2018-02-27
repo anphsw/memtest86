@@ -171,6 +171,7 @@ static struct pci_smbus_controller smbcontrollers[] = {
 	{0x8086, 0x269B, "Intel ESB2", 		ich5_get_smb, ich5_read_spd},
 	{0x8086, 0x8119, "Intel US15W", 	us15w_get_smb, us15w_read_spd},
 	{0x8086, 0x5032, "Intel EP80579", ich5_get_smb, ich5_read_spd},
+	{0x8086, 0x0f12, "Intel E3800", ich5_get_smb, ich5_read_spd},
 	
 	// AMD SMBUS
 	{0x1002, 0x4385, "AMD SB600/700",	piix4_get_smb, ich5_read_spd},
