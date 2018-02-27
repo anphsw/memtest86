@@ -1531,7 +1531,7 @@ static void poll_fsb_k10(void) {
 		}	
 
 	/* Compute the final DRAM Clock */
-	if (((cpu_id.vers.bits.extendedModel >> 4) & 0xFF) == 1) {
+	if (cpu_id.vers.bits.extendedModel == 1) {
 		dramclock = ((temp2 * 200) / 3.0) + 0.25;
 	} else {
 		unsigned long target;
