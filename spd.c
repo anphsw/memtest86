@@ -382,37 +382,42 @@ void get_spd_spec(void)
     }
 }
 
-	        
+
 void show_spd(void)
 {
     int index;
     int i, j;
-    int flag = 0;
+    int data = 0;
     popup(POP_SAVE_BUFFER_2);
     wait_keyup();
     index = find_smb_controller();
     if (index == -1) {
 	cprint(POP2_Y, POP2_X+1, "SMBus Controller not known");
-	while (!get_key());
-	wait_keyup();
-	popdown(POP_SAVE_BUFFER_2);
+	goto exit;
 	return;
     }
-    else cprint(POP2_Y, POP2_X+1, "SPD Data: Slot");    
+
     smbcontrollers[index].get_adr();
     for (j = 0; j < 16; j++) {
 	if (smbcontrollers[index].read_spd(j) == 0) {
-	    dprint(POP2_Y, POP2_X + 15, j, 2, 0);		
+	    popclear(POP_SAVE_BUFFER_2);
+	    cprint(POP2_Y, POP2_X + 1, "SPD Data: Slot");
+	    dprint(POP2_Y, POP2_X + 15, j, 2, 0);
     	    for (i = 0; i < 256; i++) {
 		hprint2(2 + POP2_Y + i / 16, 3 + POP2_X + (i % 16) * 3, spd_raw[i], 2);
 	    }
-	    flag = 0;
-    	    while(!flag) {
-		if (get_key()) flag++;
-	    }
+	    data++;
+	    while (!get_key());
 	    wait_keyup();
 	}
     }
+    if (data == 0) {
+	cprint(POP2_Y, POP2_X+1, "SMBus Controller present, but returned no info");
+    }
+
+    exit:
+    while (!get_key());
+    wait_keyup();
     popdown(POP_SAVE_BUFFER_2);
 }
 
