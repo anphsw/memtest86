@@ -152,7 +152,7 @@ void clear_scroll(void);
 extern char pop_save_buffer_1[2][POP_H][POP_W];
 extern char pop_save_buffer_2[2][POP2_H][POP2_W];
 #define POP_SAVE_BUFFER_1 POP_X, POP_Y, POP_H, POP_W, pop_save_buffer_1
-#define POP_SAVE_BUFFER_2 POP_X, POP_Y, POP_H, POP_W, pop_save_buffer_2
+#define POP_SAVE_BUFFER_2 POP2_X, POP2_Y, POP2_H, POP2_W, pop_save_buffer_2
 void popup(int pop_x, int pop_y, int pop_h, int pop_w, char pop_save_buffer[2][pop_h][pop_w]);
 void popdown(int pop_x, int pop_y, int pop_h, int pop_w, char pop_save_buffer[2][pop_h][pop_w]);
 void popclear(int pop_x, int pop_y, int pop_h, int pop_w, char pop_save_buffer[2][pop_h][pop_w]);

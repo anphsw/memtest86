@@ -300,7 +300,7 @@ void print_dmi_info(void){
 	}
 
 	for(page=1; page <= 1 + (mem_devs_count-1)/8; page++){
-		popdown(POP_SAVE_BUFFER_2);
+		popup(POP_SAVE_BUFFER_2);
 		cprint(POP2_Y+1, POP2_X+2, "DMI Memory Device Info  (page ");
 		itoa(string,page);
 		cprint(POP2_Y+1, POP2_X+32, string);
@@ -374,7 +374,9 @@ void print_dmi_info(void){
 
 		wait_keyup();
 		while (get_key() == 0);
+		popclear(POP_SAVE_BUFFER_2);
 	}
+	popdown(POP_SAVE_BUFFER_2);
 }
 	
 //return 1 if the list of bad memory devices changes, 0 otherwise, -1 if no mapped

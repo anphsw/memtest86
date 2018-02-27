@@ -363,15 +363,12 @@ void get_config()
 			break;
 		case 7:
 			/* Display DMI Memory Info */
-			popup(POP_SAVE_BUFFER_2);
-      print_dmi_info();
-			popdown(POP_SAVE_BUFFER_2);
+			print_dmi_info();
+			sflag++;
 			break;
 		case 8:
 			/* Display SPD Data */			
-			popdown(POP_SAVE_BUFFER_1);
 			show_spd();
-			popup(POP_SAVE_BUFFER_1);
 			sflag++;
 			break;
 		case 11:
