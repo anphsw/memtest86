@@ -60,7 +60,7 @@ void get_config()
 			cprint(POP_Y+3, POP_X+6, "(1) Default Tests");
 			cprint(POP_Y+4, POP_X+6, "(2) Skip Current Test");
 			cprint(POP_Y+5, POP_X+6, "(3) Select Test");
-		  cprint(POP_Y+6, POP_X+6, "(4) Enter Test List");
+			cprint(POP_Y+6, POP_X+6, "(4) Enter Test List");
 			cprint(POP_Y+7, POP_X+6, "(0) Cancel");
 			if (v->testsel < 0) {
 				cprint(POP_Y+3, POP_X+5, ">");
@@ -82,6 +82,7 @@ void get_config()
 					break;
 				case 3:
 					/* Skip test */
+					if (test >= MAX_TEST_NUMBER) test = 0;
 					bail++;
 					sflag++;
 					break;
@@ -170,7 +171,7 @@ void get_config()
 					test = n;
 					find_ticks_for_pass();
 					sflag++;
-          bail++;
+					bail++;
 					break;
 				case 11:
 				case 57:
