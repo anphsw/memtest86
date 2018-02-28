@@ -1050,6 +1050,7 @@ int ascii_to_keycode (int in)
  * serial console.
  */
 void wait_keyup( void ) {
+	sleep(100, 0, 0, 1);
 	/* Check to see if someone lifted the keyboard key */
 	while (1) {
 		if ((get_key() & 0x80) != 0) {

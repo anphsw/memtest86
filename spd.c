@@ -408,15 +408,14 @@ void show_spd(void)
     int i, j;
     int data = 0;
     popup(POP_SAVE_BUFFER_2);
-    wait_keyup();
     index = find_smb_controller();
     if (index == -1) {
 	cprint(POP2_Y, POP2_X+1, "SMBus Controller not known");
 	goto exit;
-	return;
     }
 
     smbcontrollers[index].get_adr();
+    wait_keyup();
     for (j = 0; j < 16; j++) {
 	if (smbcontrollers[index].read_spd(j) == 0) {
 	    popclear(POP_SAVE_BUFFER_2);
@@ -432,11 +431,12 @@ void show_spd(void)
     }
     if (data == 0) {
 	cprint(POP2_Y, POP2_X+1, "SMBus Controller present, but returned no info");
-    }
+    } else goto exit_nowait;
 
     exit:
     while (!get_key());
     wait_keyup();
+    exit_nowait:
     popdown(POP_SAVE_BUFFER_2);
 }
 
