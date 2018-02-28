@@ -51,8 +51,8 @@ static int	compute_segments(struct pmap map, int cpu);
 int		do_test(int ord);
 struct tseq tseq[] = {
 	/* sel, cpu_sel, pat, iter, errors, msg */
-	{1, 32,  0,   6, 0, "[Address test, walking ones, no cache] "},
-	{1, -1,  1,   6, 0, "[Address test, own address Sequential] "},
+	{1,  1,  0,   6, 0, "[Address test, walking ones, no cache] "},
+	{1,  1,  1,   6, 0, "[Address test, own address Sequential] "},
 	{1, 32,  2,   6, 0, "[Address test, own address Parallel]   "},
 	{1, 32,  3,   6, 0, "[Moving inversions, 1s & 0s Parallel]  "},
 	{1, 32,  4,   6, 0, "[ *** Test is missing! *** ]           "},
@@ -62,8 +62,8 @@ struct tseq tseq[] = {
 	{1,  1,  8,   3, 0, "[Moving inversions, 32 bit pattern]    "}, 
 	{1, 32,  9,  48, 0, "[Random number sequence]               "},
 	{1, 32, 10,   6, 0, "[Modulo 20, Random pattern]            "},
-	{1, 1,  11, 240, 0, "[Bit fade test, 2 patterns]            "},
-	{1, 0,   0,   0, 0, NULL}
+	{1,  1, 11, 240, 0, "[Bit fade test, 2 patterns]            "},
+	{1,  0,  0,   0, 0, NULL}
 };
 
 volatile int    mstr_cpu;
