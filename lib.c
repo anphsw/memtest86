@@ -28,6 +28,8 @@ int serial_baud_rate = SERIAL_BAUD_RATE;
 unsigned char serial_parity = 0;
 unsigned char serial_bits = 8;
 
+extern int mstr_cpu, conservative_smp;
+
 struct ascii_map_str {
         int ascii;
         int keycode;
@@ -796,12 +798,15 @@ void ttyprint(int y, int x, const char *p)
 	x++; y++;
 	itoa(sx, x);
 	itoa(sy, y);
-	serial_echo_print("[");
-	serial_echo_print(sy);
-	serial_echo_print(";");
-	serial_echo_print(sx);
-	serial_echo_print("H");
-	serial_echo_print(p);
+
+	if (!conservative_smp || (conservative_smp && mstr_cpu == smp_my_ord_num(smp_my_cpu_num()))) {
+	    serial_echo_print("[");
+	    serial_echo_print(sy);
+	    serial_echo_print(";");
+	    serial_echo_print(sx);
+	    serial_echo_print("H");
+	    serial_echo_print(p);
+	}
 }
 
 void serial_echo_init(void)
