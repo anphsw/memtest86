@@ -71,4 +71,6 @@ install: all
 	dd <memtest.bin >$(FDISK) bs=8192
 
 dos: all
+	echo "%define filesize `stat -L -c %s memtest.bin`" > mt86+_loader.inc && \
+	nasm mt86+_loader.asm && \
 	cat mt86+_loader memtest.bin > memtest.exe

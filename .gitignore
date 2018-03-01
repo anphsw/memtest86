@@ -1,5 +1,7 @@
 *.o
 *.s
 *.bin
+*.exe
 memtest
 memtest_shared
+mt86+_loader.inc
