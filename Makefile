@@ -63,9 +63,11 @@ clean:
 	rm -f *.o *.s *.iso memtest.bin memtest memtest_shared \
 		memtest_shared.bin memtest.iso
 
-iso:
-	make all
-	./makeiso.sh
+iso: all floppy
+	mkdir -p cd/boot && \
+	genisoimage -A "MKISOFS 1.1.2" -p "https://github.com/anphsw/memtest86" -publisher "<sdemeule@memtest.org>" \
+	-b memtest.img -c boot/boot.catalog -V "MT501" -o memtest.iso cd memtest.img README && \
+	rmdir cd/boot && rmdir cd
 
 install: all
 	dd <memtest.bin >$(FDISK) bs=8192
@@ -74,3 +76,7 @@ dos: all
 	echo "%define filesize `stat -L -c %s memtest.bin`" > mt86+_loader.inc && \
 	nasm mt86+_loader.asm && \
 	cat mt86+_loader memtest.bin > memtest.exe
+
+floppy: all
+	dd if=/dev/zero of=memtest.img bs=1474560 count=1 && \
+	dd if=memtest.bin of=memtest.img bs=1474560 conv=notrunc

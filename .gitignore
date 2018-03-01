@@ -2,6 +2,9 @@
 *.s
 *.bin
 *.exe
+*.iso
+*.img
 memtest
 memtest_shared
+mt86+_loader
 mt86+_loader.inc
