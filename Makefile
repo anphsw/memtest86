@@ -61,7 +61,7 @@ random.o: random.c
 
 clean:
 	rm -f *.o *.s *.iso memtest.bin memtest memtest_shared \
-		memtest_shared.bin memtest.iso
+		memtest_shared.bin mt86+_loader
 
 iso: all floppy
 	mkdir -p cd/boot && \
