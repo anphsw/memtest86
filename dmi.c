@@ -294,9 +294,11 @@ void print_dmi_info(void){
 		init_dmi();
 
 	if (mem_devs_count == 0){
+		popup(POP_SAVE_BUFFER_2);
 		cprint(POP2_Y+1, POP2_X+2, "No valid DMI Memory Devices info found");
+		wait_keyup();
 		while (get_key() == 0);
-		return;
+		goto exit;
 	}
 
 	for(page=1; page <= 1 + (mem_devs_count-1)/8; page++){
@@ -376,6 +378,7 @@ void print_dmi_info(void){
 		while (get_key() == 0);
 		popclear(POP_SAVE_BUFFER_2);
 	}
+	exit:
 	popdown(POP_SAVE_BUFFER_2);
 }
 	
