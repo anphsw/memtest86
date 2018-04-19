@@ -57,18 +57,17 @@ test.o: test.c
 
 random.o: random.c
 	$(CC) -c -Wall -march=i486 -m32 -O3 -fomit-frame-pointer -fno-builtin -ffreestanding random.c
-	
+
 
 clean:
-	rm -f *.o *.s *.iso memtest.bin memtest memtest_shared \
-		memtest_shared.bin mt86+_loader memtest.img memtest.exe && \
-	rmdir cd/boot cd || true
+	rm -rf *.o *.s *.iso memtest.bin memtest memtest_shared \
+		memtest_shared.bin mt86+_loader memtest.img memtest.exe cd
 
 iso: all floppy
 	mkdir -p cd/boot && \
 	genisoimage -A "MKISOFS 1.1.2" -p "https://github.com/anphsw/memtest86" -publisher "<sdemeule@memtest.org>" \
 	-b memtest.img -c boot/boot.catalog -V "MT501" -o memtest.iso cd memtest.img README && \
-	rmdir cd/boot cd
+	rm -rf cd
 
 install: all
 	dd <memtest.bin >$(FDISK) bs=8192
