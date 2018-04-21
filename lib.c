@@ -29,6 +29,7 @@ unsigned char serial_parity = 0;
 unsigned char serial_bits = 8;
 
 extern int mstr_cpu, conservative_smp;
+extern int smp_my_ord_num(int me);
 
 struct ascii_map_str {
         int ascii;
