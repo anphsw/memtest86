@@ -61,7 +61,7 @@ typedef unsigned long ulong;
 #define DMI_SEARCH_START  0x0000F000
 #define DMI_SEARCH_LENGTH 0x000F0FFF
 #define MAX_DMI_MEMDEVS 128
-#define MAX_TEST_NUMBER 11
+#define MAX_TEST_NUMBER 13
 
 #define TITLE_WIDTH	 28
 #define LINE_TITLE 		0

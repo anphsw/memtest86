@@ -24,7 +24,8 @@ void verify_mapping(int me) {
     uintptr_t offset = base%LASTROWBIT;
     base += offset;
 
-    for(int i=0; i<TESTS; i++) {
+    int i,j;
+    for(i=0; i<TESTS; i++) {
         char *name = sandyTest[i].fieldName;
         int start = sandyTest[i].startBit;
         int end = sandyTest[i].endBit;
@@ -32,7 +33,7 @@ void verify_mapping(int me) {
 
         print_test_status(name, 1);
 
-        for(int j=0; j < size; j++) {
+        for(j=0; j < size; j++) {
             uint64_t target = SET_RANGE(base, start, end, j);
             s = context_measure(target, base);
             print_serial_single(j, s.mean, s.variance);

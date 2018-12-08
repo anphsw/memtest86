@@ -12,7 +12,6 @@
 #include "cpuid.h"
 #include "smp.h"
 
-
 int slock = 0, lsr = 0;
 short serial_cons = SERIAL_CONSOLE_DEFAULT;
 #if SERIAL_TTY < 0 || SERIAL_TTY > 3
@@ -913,7 +912,7 @@ void serial_echo_printd(double value, int decimals) {
 
         // Handle floating part
         double b = value - (uint64_t)value;
-        for(int i = 0; i < decimals; i++) {
+	for(i = 0; i < decimals; i++) {
                 b *= 10;
                 WAIT_FOR_XMITR;
                 serial_echo_outb('0'+(int)b%10, UART_TX);

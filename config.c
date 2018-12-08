@@ -92,7 +92,12 @@ void get_config()
 					cprint(POP_Y+1, POP_X+3,
 						"Test Selection:");
 					cprint(POP_Y+4, POP_X+5,
-						"Test Number [1-11]: ");
+						"Test Number [1-??]: ");
+
+					/* print real number of tests available */
+					static int max_test=MAX_TEST_NUMBER;
+					dprint(POP_Y+4, POP_X+5+14, max_test, 3, 0);
+
 					n = getval(POP_Y+4, POP_X+24, 0);
 					if (0 <= n && n <= MAX_TEST_NUMBER) 
 					{

@@ -17,8 +17,10 @@ CFLAGS= -Wall -march=i486 -m32 -O0 -fomit-frame-pointer -fno-builtin \
 
 OBJS= head.o reloc.o main.o test.o init.o lib.o patn.o screen_buffer.o \
       config.o cpuid.o linuxbios.o pci.o memsize.o spd.o error.o dmi.o controller.o \
-      smp.o vmem.o random.o mapping.o libgcc.a
+      smp.o vmem.o random.o mapping.o
 
+# libgcc required for memory latency float arithmetics
+LIBGCC= $(shell $(CC) $(CFLAGS) -print-libgcc-file-name)
 
 all: memtest.bin memtest
 
@@ -27,7 +29,7 @@ all: memtest.bin memtest
 # relocation information
 memtest_shared: $(OBJS) memtest_shared.lds Makefile
 	$(LD) --warn-constructors --warn-common -static -T memtest_shared.lds \
-	 -o $@ $(OBJS) && \
+	-o $@ $(OBJS) $(LIBGCC) && \
 	$(LD) -shared -Bsymbolic -T memtest_shared.lds -o $@ $(OBJS)
 
 memtest_shared.bin: memtest_shared

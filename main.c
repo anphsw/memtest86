@@ -64,7 +64,7 @@ struct tseq tseq[] = {
 	{1, 32,  9,  48, 0, "[Random number sequence]               "},
 	{1, 32, 10,   6, 0, "[Modulo 20, Random pattern]            "},
 	{1,  1, 11, 240, 0, "[Bit fade test, 2 patterns]            "},
-    {1,  1, 12,   1, 0, "[ Latency Analysis]              "},
+	{0,  1, 12,   1, 0, "[Latency Analysis]                     "},
 	{0,  1, 13,   1, 0, "[RowHammer]                            "},
 	{1,  0,  0,   0, 0, NULL}
 };
@@ -585,7 +585,7 @@ void test_start(void)
 			window = 1;
 		}
 
-        /* For the memory latency analysis, #12, we cannot relocate so bump the
+		/* For the memory latency analysis, #12, we cannot relocate so bump the
 		 * window to 1 */
 		if (tseq[test].pat == 12 && window == 0) {
 			window = 1;
@@ -1097,7 +1097,6 @@ int do_test(int my_ord)
                 case 5:
                     bit_fade_chk(~data_pattern, my_ord);
                     break;
-
                 }
 		BAILOUT;
 		break;
@@ -1277,7 +1276,7 @@ static int find_ticks_for_test(int tst)
 		ticks = (test_size/step);//+ (test_size-offset)/step;
         //ticks = 7 * 5; // verify_mapping total tests
 		break;
-    case 13: /* RowHammer */
+	case 13: /* RowHammer */
 		ticks = (4 * ch) + (2 * row_max);
 		break;
 	case 90: /* Modulo 20 check, all ones and zeros (unused) */
