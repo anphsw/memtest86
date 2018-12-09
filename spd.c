@@ -172,6 +172,7 @@ struct pci_smbus_controller {
 
 static struct pci_smbus_controller smbcontrollers[] = {
 	// Intel SMBUS
+	{0x8086, 0xA123, "Intel SKY",           ich5_get_smb, ich5_read_spd},
 	{0x8086, 0x9C22, "Intel HSW-ULT",	ich5_get_smb, ich5_read_spd},
 	{0x8086, 0x8C22, "Intel HSW", 		ich5_get_smb, ich5_read_spd},
 	{0x8086, 0x1E22, "Intel Z77", 		ich5_get_smb, ich5_read_spd},
