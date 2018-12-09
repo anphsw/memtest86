@@ -19,9 +19,6 @@ OBJS= head.o reloc.o main.o test.o init.o lib.o patn.o screen_buffer.o \
       config.o cpuid.o linuxbios.o pci.o memsize.o spd.o error.o dmi.o controller.o \
       smp.o vmem.o random.o mapping.o
 
-# libgcc required for memory latency float arithmetics
-LIBGCC= $(shell $(CC) $(CFLAGS) -print-libgcc-file-name)
-
 all: memtest.bin memtest
 
 # Link it statically once so I know I don't have undefined
@@ -29,7 +26,7 @@ all: memtest.bin memtest
 # relocation information
 memtest_shared: $(OBJS) memtest_shared.lds Makefile
 	$(LD) --warn-constructors --warn-common -static -T memtest_shared.lds \
-	-o $@ $(OBJS) $(LIBGCC) && \
+	-o $@ $(OBJS) && \
 	$(LD) -shared -Bsymbolic -T memtest_shared.lds -o $@ $(OBJS)
 
 memtest_shared.bin: memtest_shared

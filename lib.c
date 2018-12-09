@@ -880,7 +880,8 @@ void serial_echo_print(const char *p)
 }
 
 void serial_echo_printd(double value, int decimals) {
-        int digits[64], i = 0, j = 0;
+        int im = 0, il = 0, jm = 0, jl = 0, i = 0;
+	int digits_most[32] = {0}, digits_least[32] = {0};
 
         // Handle negative values
         if (value < 0)  {
@@ -897,13 +898,26 @@ void serial_echo_printd(double value, int decimals) {
         }
         else {
                 // Handle integer part
-                for(; a != 0; a/=10) {
-                        digits[i] = a%10;
-                        i++;
+		// most significant part
+		uint32_t m = a >> 32;
+                for(; m != 0; m/=10) {
+                        digits_most[im] = m%10;
+                        im++;
                 }
-                for(j = i-1; j != -1; j--) {
+		// least significant part
+		uint32_t l = a >> 32;
+                for(; l != 0; l/=10) {
+                        digits_least[il] = l%10;
+                        il++;
+                }
+		// TODO: merge to dprint code
+                for(jm = im-1; jm != -1; jm--) {
                         WAIT_FOR_XMITR;
-                        serial_echo_outb('0'+digits[j], UART_TX);
+                        serial_echo_outb('0'+digits_most[jm], UART_TX);
+                }
+                for(jl = il-1; jl != -1; jl--) {
+                        WAIT_FOR_XMITR;
+                        serial_echo_outb('0'+digits_least[jl], UART_TX);
                 }
         }
 
