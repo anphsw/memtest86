@@ -821,10 +821,6 @@ void test_start(void)
 							beep(2000);
 						}
 				}
-
-                        // after finishing one pass, get stuck in infinite loop to prevent further passes.
-                        // every iteration of the loop checks for user-input keys ('ESC': reboots system)
-                        for (;;) {check_input();}
 	    }
 
 	    bail=0;
