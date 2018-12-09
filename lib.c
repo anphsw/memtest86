@@ -905,7 +905,7 @@ void serial_echo_printd(double value, int decimals) {
                         im++;
                 }
 		// least significant part
-		uint32_t l = a >> 32;
+		uint32_t l = a & 0xffffffff;
                 for(; l != 0; l/=10) {
                         digits_least[il] = l%10;
                         il++;
