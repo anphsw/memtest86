@@ -84,7 +84,7 @@ void coretemp(void)
 	if(imc_type == 0) { return; }
 	
 	tnow = 0;
-	
+
 	// Intel  CPU
 	if(cpu_id.vend_id.char_array[0] == 'G' && cpu_id.max_cpuid >= 6)
 	{
@@ -95,10 +95,9 @@ void coretemp(void)
 			tjunc = ((msrl >> 16) & 0x7F);
 			if(tjunc < 50 || tjunc > 125) { tjunc = 90; } // assume Tjunc = 90°C if boggus value received.
 			tnow = tjunc - tabs;		
-			dprint(LINE_CPU+1, 30, v->check_temp, 3, 0);	
 			v->check_temp = tnow;
 		}
-		return;
+		goto print_temp;
 	}
 	
 	// AMD CPU
@@ -107,10 +106,19 @@ void coretemp(void)
 		pci_conf_read(0, 24, 3, 0xA4, 4, &rtcr);
 		amd_raw_temp = ((rtcr >> 21) & 0x7FF);
 		v->check_temp = (int)(amd_raw_temp / 8);
-		dprint(LINE_CPU+1, 30, v->check_temp, 3, 0);	
 	}	
-	
-				
+
+	print_temp:
+	// check and set maximum temperature value
+	if (v->check_temp_max_ok = 1 && 0 < v->check_temp_max < 255) {
+	    if (v->check_temp > v->check_temp_max) v->check_temp_max = v->check_temp;
+	} else {
+	    v->check_temp_max = 0;
+	}
+	v->check_temp_max_ok = 1;
+
+	dprint(LINE_CPU,   33, v->check_temp, 3, 0);
+	dprint(LINE_CPU+1, 33, v->check_temp_max, 3, 0);
 }
 
 void print_cpu_line(float dram_freq, float fsb_freq, int ram_type)

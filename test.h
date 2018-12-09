@@ -317,6 +317,8 @@ struct vars {
 	int fail_safe;
 	int each_sec;
 	int beepmode;
+	int check_temp_max;
+	int check_temp_max_ok;
 };
 
 #define FIRMWARE_UNKNOWN   0
