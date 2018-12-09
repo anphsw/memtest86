@@ -110,10 +110,10 @@ void coretemp(void)
 
 	print_temp:
 	// check and set maximum temperature value
-	if (v->check_temp_max_ok = 1 && 0 < v->check_temp_max < 255) {
+	if (v->check_temp_max_ok == 1 && 0 < v->check_temp_max && v->check_temp_max < 255) {
 	    if (v->check_temp > v->check_temp_max) v->check_temp_max = v->check_temp;
 	} else {
-	    v->check_temp_max = 0;
+	    v->check_temp_max = v->check_temp;
 	}
 	v->check_temp_max_ok = 1;
 
