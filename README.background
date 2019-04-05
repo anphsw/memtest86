@@ -111,7 +111,7 @@ addr   memory that is being tested... |0x200000                 |         |RAM_E
        placed in v->pmap[] array. This array is the reference 
        of the RAM memory map on the system. 
     v. The memory range(in page numbers) which the 
-       memtest86 can test is partitioned into windows.
+       memtest86+ can test is partitioned into windows.
        the current version of memtest86-smp has the capability
        to test the memory from 0x0 - 0xFFFFFFFFF (max address
        when pae mode is enabled). 
@@ -142,7 +142,7 @@ addr   memory that is being tested... |0x200000                 |         |RAM_E
        next window follows the same procedure till all the windows 
        are done. Once all the windows are done, the BSP moves to the
        next test. Before executing in any window the BSP checks if
-       the window overlaps with the code/data of memtest86, if so
+       the window overlaps with the code/data of memtest86+, if so
        tries to relocate to 0x200000. If the window includes both 
        0x2000 as well as 0x200000  the BSP skips that window.
        Looking at the window values the only time the memtest
@@ -151,6 +151,3 @@ addr   memory that is being tested... |0x200000                 |         |RAM_E
 Known Issues:
 * Memtest86-smp does not work on IBM-NUMA machines, x440 and friends.
 
-email comments to:
-Kalyan Rajasekharuni<kc_rajasekharuni@yahoo.com>
-Sub: Memtest86-SMP
