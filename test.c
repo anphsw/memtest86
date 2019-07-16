@@ -342,6 +342,7 @@ void movinvr(int me)
 			}
 /* Original C code replaced with hand tuned assembly code */
 /*
+			*p = rand(me);
 			for (; p <= pe; p++) {
 				*p = rand(me);
 			}
