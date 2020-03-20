@@ -391,8 +391,18 @@ void print_dmi_info(void){
 
 			if (mem_devs[i]->size == 0){
 				cprint(yof, POP2_X+4+18, "Empty");
-			}else if (mem_devs[i]->size == 0xFFFF){
+			// Extended size, SMBIOS 2.7+
+			}else if (mem_devs[i]->header.length > 0x1C &&
+			    mem_devs[i]->size == 0x7FFF &&
+			    mem_devs[i]->extended_size){
+				size_in_mb = mem_devs[i]->extended_size & 0x7FFFFFFF;
+				itoa(string, size_in_mb);
+				cprint(yof, POP2_X+4+18, string);
+			// Invalid cases
+			}else if (mem_devs[i]->size == 0xFFFF || 
+				  mem_devs[i]->size == 0x7FFF){
 				cprint(yof, POP2_X+4+18, "Unknown");
+			// Normal size
 			}else{
 				size_in_mb = 0x7FFF & mem_devs[i]->size;
 				if (mem_devs[i]->size & 0x8000)
@@ -401,12 +411,20 @@ void print_dmi_info(void){
 				cprint(yof, POP2_X+4+18, string);
 			}
 			
-			//this is the only field that needs to be SMBIOS 2.3+ 
-			if ( mem_devs[i]->speed && 
-			     mem_devs[i]->header.length > 21){
+			// Extended speed, SMBIOS 2.7+
+			if ( mem_devs[i]->header.length > 0x54 &&
+			     mem_devs[i]->speed == 0xFFFF && 
+			     mem_devs[i]->extended_speed){
+				itoa(string, mem_devs[i]->extended_speed);
+				cprint(yof, POP2_X+4+27, string);
+			// Normal speed, SMBIOS 2.3+
+			}else if ( mem_devs[i]->header.length > 21 &&
+			     	   mem_devs[i]->speed &&
+				   mem_devs[i]->speed != 0xFFFF){
 				itoa(string, mem_devs[i]->speed);
 				cprint(yof, POP2_X+4+27, string);
 			}else{
+			// Fallback if SMBIOS < 2.3 or data inconsistent
 				cprint(yof, POP2_X+4+27, "Unknown");
 			}
 			cprint(yof, POP2_X+4+37, memory_types[mem_devs[i]->type]);
