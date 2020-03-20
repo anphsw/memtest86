@@ -6,6 +6,9 @@
  * Release under the GPL version 2
  * ----------------------------------------------------
  * Memtest86+ V4.00 - Added compliance with SMBIOS Spec V2.6.1
+ *
+ * Related documents:
+ * - System Management BIOS (SMBIOS) Reference Specification (DSP0134)
  */
 
 
@@ -16,7 +19,10 @@
 #define round_up(x,y) (((x) + (y) - 1) & ~((y)-1))
 #define round_down(x,y) ((x) & ~((y)-1))
 
-
+/* 
+ * Entry Point Structure (32 bit)
+ * table 1 in SMBIOS 3.3 standard
+ */
 struct dmi_eps {
 	uint8_t  anchor[4];
 	int8_t   checksum;
@@ -34,51 +40,75 @@ struct dmi_eps {
 	uint8_t  SMBIOSrev;
 } __attribute__((packed));
 
+
+/* 
+ * Structure Header
+ * table 3 in SMBIOS 3.3 standard
+ */
 struct tstruct_header{
 	uint8_t  type;
 	uint8_t  length;
 	uint16_t handle;
 } __attribute__((packed));
 
+
+/* 
+ * System information
+ * table 10 in SMBIOS 3.3 standard  
+ */
 struct system_map {
-	struct tstruct_header header;
+	struct tstruct_header header; /* 0x00 SMBIOS 2.0+ */
 	uint8_t	manufacturer;
 	uint8_t productname;
 	uint8_t version;
 	uint8_t serialnumber;
-	uint8_t uuidbytes[16];
+	uint8_t uuidbytes[16]; /* 0x08 SMBIOS 2.1+ */
 	uint8_t wut;
+	uint8_t sku; /* 0x19 SMBIOS 2.4+ */
+	uint8_t family;
 } __attribute__((packed));
 
+/* 
+ * Processor Information
+ * table 21 in SMBIOS 3.3 standard  
+ */
 struct cpu_map {
-	struct tstruct_header header;
-	uint8_t	cpu_socket;
-	uint8_t cpu_type;
-	uint8_t cpu_family;
-	uint8_t cpu_manufacturer;
+	struct tstruct_header header; /* 0x00 SMBIOS 2.0+ */
+	uint8_t	 cpu_socket;
+	uint8_t  cpu_type;
+	uint8_t  cpu_family;
+	uint8_t  cpu_manufacturer;
 	uint32_t cpu_id;
-	uint8_t cpu_version;
-	uint8_t	cpu_voltage;
-	uint16_t	ext_clock;
-	uint16_t	max_speed;
+	uint8_t  cpu_version;
+	uint8_t	 cpu_voltage;
+	uint16_t ext_clock;
+	uint16_t max_speed;
 	uint16_t cur_speed;
-	uint8_t	cpu_status;
-	uint8_t	cpu_upgrade;
-	uint16_t l1_handle;
+	uint8_t	 cpu_status;
+	uint8_t	 cpu_upgrade;
+	uint16_t l1_handle; /* 0x1A SMBIOS 2.1+ */
 	uint16_t l2_handle;
 	uint16_t l3_handle;
-	uint8_t	cpu_serial;	
-	uint8_t	cpu_asset_tag;
-	uint8_t cpu_part_number;
-	uint8_t	core_count;
-	uint8_t	core_enabled;
-	uint8_t	thread_count;
+	uint8_t	 cpu_serial; /* 0x20 SMBIOS 2.3+ */
+	uint8_t	 cpu_asset_tag;
+	uint8_t  cpu_part_number;
+	uint8_t	 core_count; /* 0x23 SMBIOS 2.5+ */
+	uint8_t	 core_enabled;
+	uint8_t	 thread_count;
 	uint16_t cpu_specs;
-	uint16_t cpu_family_2;	
+	uint16_t cpu_family_2; /* 0x28 SMBIOS 2.6+ */
+	uint16_t core_count_2;
+	uint16_t core_enabled_2;
+	uint16_t thread_count_2;
 } __attribute__((packed));
 
+
+/* 
+ * Memory Device
+ * table 74 in SMBIOS 3.3 standard  
+ */
 struct mem_dev {
-	struct tstruct_header header;
+	struct tstruct_header header; /* 0x00 SMBIOS 2.1+ */
 	uint16_t pma_handle;
 	uint16_t err_handle;
 	uint16_t tot_width;
@@ -90,15 +120,38 @@ struct mem_dev {
 	uint8_t  bank_locator;
 	uint8_t  type;
 	uint16_t typedetail;
-	uint16_t speed;
+	uint16_t speed; /* 0x15 SMBIOS 2.3+ */
 	uint8_t  manufacturer;
 	uint8_t  serialnum;
 	uint8_t  asset;
 	uint8_t  partnum;
+	uint8_t  attributes; /* 0x0C SMBIOS 2.6+ */
+	uint32_t extended_size; /* 0x1C SMBIOS 2.7+ */
+	uint16_t configured_speed;
+	uint16_t min_volt; /* 0x22 SMBIOS 2.8+ */
+	uint16_t max_volt;
+	uint16_t conf_volt;
+	uint8_t  tech; /* 0x28 SMBIOS 3.2+ */
+	uint16_t op_mode;
+	uint8_t  firmware;
+	uint16_t manufacturer_id;
+	uint16_t product_id;
+	uint16_t sub_manufacturer_id;
+	uint16_t sub_product_id;
+	uint64_t non_volatile_size;
+	uint64_t volatile_size;
+	uint64_t cache_size;
+	uint64_t logical_size;
+	uint32_t extended_speed; /* 0x54 SMBIOS 3.3+ */
+	uint32_t extended_configured_speed;
 } __attribute__((packed));
 
+/* 
+ * Memory Device Mapped Address
+ * table 85 in SMBIOS 3.3 standard  
+ */
 struct md_map{
-	struct tstruct_header header;
+	struct tstruct_header header; /* 0x00 SMBIOS 2.1+ */
 	uint32_t start;
 	uint32_t end;
 	uint16_t md_handle;
@@ -106,32 +159,47 @@ struct md_map{
 	uint8_t  row_pos;
 	uint8_t  interl_pos;
 	uint8_t  interl_depth;
+	uint64_t extended_start; /* 0x13 SMBIOS 2.7+ */
+	uint64_t extended_end;
 } __attribute__((packed));
 
+/* 
+ * Physical Memory Array
+ * table 70 in SMBIOS 3.3 standard  
+ */
 struct pma{
-	struct tstruct_header header;
+	struct tstruct_header header; /* 0x04 SMBIOS 2.1+ */
 	uint8_t  location;
 	uint8_t  use;
 	uint8_t  ecc;
 	uint32_t capacity;
 	uint16_t errhandle;
 	uint16_t numdevs;
+	uint64_t extended_capacity; /* 0x0F SMBIOS 2.7+ */
 } __attribute__((packed));
 
+/* 
+ * Memory Device: Form Factor
+ * table 75 in SMBIOS 3.3 standard  
+ */
 static char *form_factors[] = {
 	"?",
 	"Other", "Unknown", "SIMM", "SIP", "Chip", "DIP", "ZIP",
 	"Proprietary Card", "DIMM", "TSOP", "Row of chips", "RIMM",
-	"SODIMM", "SRIMM", "FB-DIMM"
+	"SODIMM", "SRIMM", "FB-DIMM", "Die"
 };
 
-
+/* 
+ * Memory Device: Type
+ * table 76 in SMBIOS 3.3 standard  
+ */
 static char *memory_types[] = {
 	"?",
 	"Other", "????", "DRAM", "EDRAM", "VRAM", "SRAM", "RAM",
 	"ROM", "FLASH", "EEPROM", "FEPROM", "EPROM", "CDRAM", "3DRAM",
 	"SDRAM", "SGRAM", "RDRAM", "DDR", "DDR2", "DDR2 FB", "RSVD",
-  "RSVD","RSVD","DDR3","FBD2"
+  	"RSVD", "RSVD", "DDR3", "FBD2", "DDR4", "LPDDR", "LPDDR2",
+	"LPDDR3", "LPDDR4", "Logical non-volatile device", "HBM", "HBM2"
 };
 
 
