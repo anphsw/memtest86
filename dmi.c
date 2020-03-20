@@ -168,7 +168,7 @@ struct md_map{
  * table 70 in SMBIOS 3.3 standard  
  */
 struct pma{
-	struct tstruct_header header; /* 0x04 SMBIOS 2.1+ */
+	struct tstruct_header header; /* 0x00 SMBIOS 2.1+ */
 	uint8_t  location;
 	uint8_t  use;
 	uint8_t  ecc;
@@ -394,7 +394,7 @@ void print_dmi_info(void){
 			}else if (mem_devs[i]->size == 0xFFFF){
 				cprint(yof, POP2_X+4+18, "Unknown");
 			}else{
-				size_in_mb = 0xEFFF & mem_devs[i]->size;
+				size_in_mb = 0x7FFF & mem_devs[i]->size;
 				if (mem_devs[i]->size & 0x8000)
 					size_in_mb = size_in_mb<<10;
 				itoa(string, size_in_mb);
