@@ -1608,20 +1608,19 @@ struct sample context_measure(uintptr_t address, uintptr_t base) {
     return s;
 }
 
-void print_serial(int step, double mean1, double variance1,
+void print_latency(int step, double mean1, double variance1,
                    double mean2, double variance2)
 {
-    serial_echo_print("\nBegin sample data");
-    serial_echo_print("\nstep:");
-    serial_echo_printd(step, 5);
-    serial_echo_print("\nmean1:");
-    serial_echo_printd(mean1, 5);
-    serial_echo_print("\nvariance1:");
-    serial_echo_printd(variance1, 5);
-    serial_echo_print("\nmean2:");
-    serial_echo_printd(mean2, 5);
-    serial_echo_print("\nvariance2:");
-    serial_echo_printd(variance2, 5);
+    cprint(LINE_LATENCY-3, COL_LATENCY,	"Memory latency: ");
+    cprint(LINE_LATENCY-2, COL_LATENCY,	"STEP                                       ");
+    cprint(LINE_LATENCY-1, COL_LATENCY,	"M1/V1                                      ");
+    cprint(LINE_LATENCY, COL_LATENCY,	"M2/V2                                      ");
+
+    dpprint(LINE_LATENCY-2, COL_LATENCY+10, step, 5);
+    dpprint(LINE_LATENCY-1, COL_LATENCY+10, mean1, 5);
+    dpprint(LINE_LATENCY-1, COL_LATENCY+30, variance1, 5);
+    dpprint(LINE_LATENCY,   COL_LATENCY+10, mean2, 5);
+    dpprint(LINE_LATENCY,   COL_LATENCY+30, variance2, 5);
 }
 
 void latency_analysis(uintptr_t test_size, uintptr_t step, int me)
@@ -1640,13 +1639,13 @@ void latency_analysis(uintptr_t test_size, uintptr_t step, int me)
             s1 = measure(start);
             s2 = context_measure(start+i, start);
 
-            print_serial(i, s1.mean, s1.variance, s2.mean, s2.variance);
+            print_latency(i, s1.mean, s1.variance, s2.mean, s2.variance);
 
             do_tick(me);
         }
 
         // Segment test complete (at most one segment is tested)
-        serial_echo_print("\nLatency Analysis Complete\n");
+	cprint(LINE_MSG, COL_MSG-8, "** Analysis Complete: LATENCY                  **");
         return;
         BAILR
     }
@@ -1669,13 +1668,13 @@ void memscan_analysis(uintptr_t offset, uintptr_t test_size, uintptr_t step, int
             s1 = measure(start+i);
             s2 = measure(start+i+offset);
 
-            print_serial(i/step, s1.mean, s1.variance, s2.mean, s2.variance);
+            print_latency(i/step, s1.mean, s1.variance, s2.mean, s2.variance);
 
             do_tick(me);
         }
 
         // Segment test complete (at most one segment is tested)
-        serial_echo_print("\nMemscan Analysis Complete\n");
+	cprint(LINE_MSG, COL_MSG-8, "** Analysis Complete:         MEMSCAN          **");
         BAILR
     }
 }

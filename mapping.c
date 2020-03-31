@@ -51,11 +51,11 @@ void verify_mapping(int me) {
 void print_serial_single(int step, double mean, double variance) {
     serial_echo_print("\nBegin sample data");
     serial_echo_print("\nstep:");
-    serial_echo_printd(step, 5);
+//    serial_echo_printd(step, 5);
     serial_echo_print("\nmean:");
-    serial_echo_printd(mean, 5);
+//    serial_echo_printd(mean, 5);
     serial_echo_print("\nvariance:");
-    serial_echo_printd(variance, 5);
+//    serial_echo_printd(variance, 5);
 }
 
 void print_test_status(char *testName, uint8_t begin) {

@@ -369,6 +369,71 @@ void dprint(int y, int x, ulong val, int len, int right)
 	cprint(y,x,buf);
 }
 
+/* print double precision value */
+void dpprint(int y, int x, double value, int decimals) {
+        int im = 0, il = 0, jm = 0, jl = 0, i = 0;
+	int digits_most[32] = {0}, digits_least[32] = {0};
+
+	char buf[64] = {0};
+	int buf_ptr = 0;
+
+        // Handle negative values
+        if (value < 0)  {
+                value *= -1;
+		buf[buf_ptr] = '-';
+		buf_ptr++;
+        }
+
+        uint64_t a = value;
+
+        // Handle zero integer part
+        if (a == 0) {
+		buf[buf_ptr] = '0';
+		buf_ptr++;
+        }
+        else {
+                // Handle integer part
+		// most significant part
+		uint32_t m = a >> 32;
+                for(; m != 0; m/=10) {
+                        digits_most[im] = m%10;
+                        im++;
+                }
+		// least significant part
+		uint32_t l = a & 0xffffffff;
+                for(; l != 0; l/=10) {
+                        digits_least[il] = l%10;
+                        il++;
+                }
+		// fill buffer
+                for(jm = im-1; jm != -1; jm--) {
+			buf[buf_ptr] = '0'+digits_most[jm];
+			buf_ptr++;
+                }
+                for(jl = il-1; jl != -1; jl--) {
+			buf[buf_ptr] = '0'+digits_least[jl];
+			buf_ptr++;
+                }
+        }
+
+	buf[buf_ptr] = '.';
+	buf_ptr++;
+
+        // Handle floating part
+        double b = value - (uint64_t)value;
+
+	// fill buffer
+	for(i = 0; i < decimals; i++) {
+		buf[buf_ptr] = '0' + ((int)(b * (10 ^ i))) % 10;
+		buf_ptr++;
+        }
+
+	// end of line
+	buf[buf_ptr] = 0;
+
+	cprint(y, x, buf);
+}
+
 /*
  * Print a hex number on screen at least digits long
  */
@@ -877,62 +942,6 @@ void serial_echo_print(const char *p)
 		}
 		p++;
 	}
-}
-
-void serial_echo_printd(double value, int decimals) {
-        int im = 0, il = 0, jm = 0, jl = 0, i = 0;
-	int digits_most[32] = {0}, digits_least[32] = {0};
-
-        // Handle negative values
-        if (value < 0)  {
-                value *= -1;
-                WAIT_FOR_XMITR;
-                serial_echo_outb('-', UART_TX);
-        }
-        uint64_t a = value;
-
-        // Handle zero integer part
-        if (a == 0) {
-                WAIT_FOR_XMITR;
-                serial_echo_outb('0', UART_TX);
-        }
-        else {
-                // Handle integer part
-		// most significant part
-		uint32_t m = a >> 32;
-                for(; m != 0; m/=10) {
-                        digits_most[im] = m%10;
-                        im++;
-                }
-		// least significant part
-		uint32_t l = a & 0xffffffff;
-                for(; l != 0; l/=10) {
-                        digits_least[il] = l%10;
-                        il++;
-                }
-		// TODO: merge to dprint code
-                for(jm = im-1; jm != -1; jm--) {
-                        WAIT_FOR_XMITR;
-                        serial_echo_outb('0'+digits_most[jm], UART_TX);
-                }
-                for(jl = il-1; jl != -1; jl--) {
-                        WAIT_FOR_XMITR;
-                        serial_echo_outb('0'+digits_least[jl], UART_TX);
-                }
-        }
-
-        WAIT_FOR_XMITR;
-        serial_echo_outb('.', UART_TX);
-
-        // Handle floating part
-        double b = value - (uint64_t)value;
-	for(i = 0; i < decimals; i++) {
-                b *= 10;
-                WAIT_FOR_XMITR;
-                serial_echo_outb('0'+(int)b%10, UART_TX);
-        }
-        WAIT_FOR_XMITR;
-        serial_echo_outb(13, UART_TX);
 }
 
 /* Except for multi-character key sequences this mapping

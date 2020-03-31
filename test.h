@@ -78,6 +78,7 @@ typedef unsigned long ulong;
 #define LINE_CPU			7
 #define LINE_RAM			8
 #define LINE_DMI		 23
+#define LINE_LATENCY	21
 #define COL_INF1        15
 #define COL_INF2        32
 #define COL_INF3        51
@@ -89,6 +90,7 @@ typedef unsigned long ulong;
 #define COL_MSG		23
 #define COL_TIME	67
 #define COL_SPEC 41
+#define COL_LATENCY	2
 
 #define POP_W	34
 #define POP_H	15
@@ -129,7 +131,6 @@ void reverse(char *p);
 void serial_console_setup(char *param);
 void serial_echo_init(void);
 void serial_echo_print(const char *s);
-void serial_echo_printd(double value, int decimals);
 void ttyprint(int y, int x, const char *s);
 void ttyprintc(int y, int x, char c);
 void cprint(int y,int x, const char *s);
@@ -140,6 +141,7 @@ void hprint3(int y,int x, ulong val, int len);
 void xprint(int y,int x,ulong val);
 void aprint(int y,int x,ulong page);
 void dprint(int y,int x,ulong val,int len, int right);
+void dpprint(int y,int x, double value, int decimals);
 void movinv1(int iter, ulong p1, ulong p2, int cpu);
 void movinvr(int cpu);
 void movinv32(int iter, ulong p1, ulong lb, ulong mb, int sval, int off,
