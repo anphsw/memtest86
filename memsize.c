@@ -35,7 +35,9 @@ void mem_size(void)
 
 	/* Get the memory size from the BIOS */
         /* Determine the memory map */
-	if (query_linuxbios()) {
+	if (query_multiboot()) {
+                flag = 2;
+        } else if (query_linuxbios()) {
 		flag = 1;
 	} else if (query_pcbios()) {
 		flag = 2;

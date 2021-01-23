@@ -89,12 +89,10 @@ To create a boot-disk with this pre-built image do the following:
 =================
 Memtest86+ can be used on PC's equipped with a serial port for the console.
 By default serial port console support is not enabled since it slows
-down testing.  To enable change the SERIAL_CONSOLE_DEFAULT define in
-config.h from a zero to a one.  The serial console baud rate may also
-be set in config.h with the SERIAL_BAUD_RATE define.  The other serial
-port settings are no parity, 8 data bits, 1 stop bit.  All of the features
-used by memtest86 are accessible via the serial console.  However, the
-screen sometimes is garbled when the online commands are used.
+down testing.
+
+To activate it, add a console parameter on the memtest86+
+command-line, like: "/boot/memtest86+.bin console=ttyS0,115200n8".
 
 
 5) Online Commands

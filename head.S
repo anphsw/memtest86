@@ -13,15 +13,24 @@
 
 .text
 #define __ASSEMBLY__
+#define ASM_FILE
 #include "defs.h"
 #include "config.h"
 #include "test.h"
+#include "multiboot.h"
 
 	.code32
 	.globl startup_32
 startup_32:
 	cld
 	cli
+
+	/* Store MBI pointer */
+	xorl	%ecx, %ecx
+	cmpl	$MULTIBOOT_BOOTLOADER_MAGIC, %eax
+	jne 0f
+	movl	%ebx, %ecx
+0:
 
 	/* Ensure I have a boot_stack pointer */
 	testl	%esp, %esp
@@ -35,7 +44,21 @@ startup_32:
 0:	popl	%ebx
 	addl	$_GLOBAL_OFFSET_TABLE_+[.-0b], %ebx
 
-	/* Pick the appropriate boot_stack address */
+	/* Move MBI pointer to a safe place */
+	testl	%ecx, %ecx
+	je	0f
+	movl	%ecx, mbiptr@GOTOFF(%ebx)
+0:
+
+	jmp	0f
+	/* Multiboot header */
+.align 4
+	.long   MULTIBOOT_HEADER_MAGIC
+	.long   0
+	.long   -MULTIBOOT_HEADER_MAGIC
+0:
+
+	/* Pick the appropriate stack address */
 	leal	boot_stack_top@GOTOFF(%ebx), %esp
 
 	/* Reload all of the segment registers */
@@ -780,6 +803,9 @@ prot:
 	movl	$1, %eax
 	ret
 
+.globl mbiptr
+mbiptr:
+	.long	0
 realptr:
 	.word	real - RSTART
 	.word	0x0000
