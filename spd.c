@@ -171,59 +171,120 @@ struct pci_smbus_controller {
 };
 
 static struct pci_smbus_controller smbcontrollers[] = {
-	// Intel SMBUS
-	{0x8086, 0x18DF, "Intel CDF",           ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x9DA3, "Intel Cannon Lake",   ich5_get_smb, ich5_read_spd},
-	{0x8086, 0xA323, "Intel Cannon Lake",   ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x31D4, "Intel GL",            ich5_get_smb, ich5_read_spd},
-	{0x8086, 0xA2A3, "Intel 200/Z370",      ich5_get_smb, ich5_read_spd},
-	{0x8086, 0xA223, "Intel Lewisburg",     ich5_get_smb, ich5_read_spd},
-	{0x8086, 0xA1A3, "Intel C620",          ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x5AD4, "Intel Broxton",       ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x19DF, "Intel Atom C3000",    ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x9D23, "Intel Sunrise Point", ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x0F12, "Intel BayTrail",      ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x9CA2, "Intel Wildcat Point", ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x8CA2, "Intel Wildcat Point", ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x23B0, "Intel DH895XCC",      ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x8D22, "Intel C610/X99",      ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x8D7D, "Intel C610/X99 B0",   ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x8D7E, "Intel C610/X99 B1",   ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x8D7F, "Intel C610/X99 B2",   ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x1F3C, "Intel Atom C2000",    ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x2330, "Intel DH89xxCC",      ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x1D22, "Intel C600/X79",      ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x1D70, "Intel C600/X79 B0",   ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x1D71, "Intel C600/X79 B1",   ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x1D72, "Intel C600/X79 B2",   ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x2483, "Intel 82801CA/CAM",   ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x2443, "Intel 82801BA/BAM",   ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x2423, "Intel 82801AB",       ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x2413, "Intel 82801AA",       ich5_get_smb, ich5_read_spd},
-	{0x8086, 0xA123, "Intel SKY",           ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x9C22, "Intel HSW-ULT",	ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x8C22, "Intel HSW", 		ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x1E22, "Intel Z77", 		ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x1C22, "Intel P67", 		ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x3B30, "Intel P55", 		ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x3A60, "Intel ICH10B", 	ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x3A30, "Intel ICH10R", 	ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x2930, "Intel ICH9", 		ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x283E, "Intel ICH8", 		ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x27DA, "Intel ICH7", 		ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x266A, "Intel ICH6", 		ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x24D3, "Intel ICH5", 		ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x24C3, "Intel ICH4", 		ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x25A4, "Intel 6300ESB", ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x269B, "Intel ESB2", 		ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x8119, "Intel US15W", 	us15w_get_smb, us15w_read_spd},
-	{0x8086, 0x5032, "Intel EP80579", ich5_get_smb, ich5_read_spd},
-	{0x8086, 0x0f12, "Intel E3800", ich5_get_smb, ich5_read_spd},
-	
-	// AMD SMBUS
-	{0x1002, 0x4385, "AMD SB600/700",	piix4_get_smb, ich5_read_spd},
-	{0x1022, 0x780B, "AMD SB800/900", sb800_get_smb, ich5_read_spd},
-	{0, 0, "", NULL, NULL}
+     // Intel SMBUS
+     {0x8086, 0x2413, "Intel 82801AA (ICH)",    ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x2423, "Intel 82801AB (ICH0)",   ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x2443, "Intel 82801BA (ICH2)",   ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x2483, "Intel 82801CA (ICH3)",   ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x24C3, "Intel 82801DB (ICH4)",   ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x24D3, "Intel 82801E (ICH5)",    ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x25A4, "Intel 6300ESB",          ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x266A, "Intel 82801F (ICH6)",    ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x269B, "Intel 6310ESB/6320ESB",  ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x27DA, "Intel 82801G (ICH7)",    ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x283E, "Intel 82801H (ICH8)",    ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x2930, "Intel 82801I (ICH9)",    ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x5032, "Intel EP80579",          ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x3A30, "Intel ICH10R",           ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x3A60, "Intel ICH10B",           ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x3B30, "Intel P55",              ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x1C22, "Intel P67",              ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x1D22, "Intel C600/X79",         ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x1D70, "Intel C600/X79 B0",      ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x1D71, "Intel C600/X79 B1",      ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x1D72, "Intel C600/X79 B2",      ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x2330, "Intel DH89xxCC",         ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x1E22, "Intel Z77",              ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x8C22, "Intel HSW",              ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x9C22, "Intel HSW-ULT",          ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x1F3C, "Intel Atom C2000",       ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x8D22, "Intel C610/X99",         ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x8D7D, "Intel C610/X99 B0",      ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x8D7E, "Intel C610/X99 B1",      ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x8D7F, "Intel C610/X99 B2",      ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x23B0, "Intel DH895XCC",         ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x8CA2, "Intel Wildcat Point",    ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x9CA2, "Intel Wildcat Point-LP", ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x0F12, "Intel BayTrail",         ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x2292, "Intel Braswell",         ich5_get_smb, ich5_read_spd},
+     {0x8086, 0xA123, "Intel Sunrise Point-H",  ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x9D23, "Intel Sunrise Point-LP", ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x19DF, "Intel Atom C3000",       ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x1BC9, "Intel Emmitsburg",       ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x5AD4, "Intel Broxton",          ich5_get_smb, ich5_read_spd},
+     {0x8086, 0xA1A3, "Intel C620",             ich5_get_smb, ich5_read_spd},
+     {0x8086, 0xA223, "Intel Lewisburg",        ich5_get_smb, ich5_read_spd},
+     {0x8086, 0xA2A3, "Intel 200/Z370",         ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x31D4, "Intel Gemini Lake",      ich5_get_smb, ich5_read_spd},
+     {0x8086, 0xA323, "Intel Cannon Lake-H",    ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x9DA3, "Intel Cannon Lake-LP",   ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x18DF, "Intel Cedar Fork",       ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x34A3, "Intel Ice Lake-LP",      ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x38A3, "Intel Ice Lake-N",       ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x02A3, "Intel Comet Lake",       ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x06A3, "Intel Comet Lake-H",     ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x4B23, "Intel Elkhart Lake",     ich5_get_smb, ich5_read_spd},
+     {0x8086, 0xA0A3, "Intel Tiger Lake-LP",    ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x43A3, "Intel Tiger Lake-H",     ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x4DA3, "Intel Jasper Lake",      ich5_get_smb, ich5_read_spd},
+     {0x8086, 0xA3A3, "Intel Comet Lake-V",     ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x7AA3, "Intel Alder Lake-S",     ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x51A3, "Intel Alder Lake-P",     ich5_get_smb, ich5_read_spd},
+     {0x8086, 0x54A3, "Intel Alder Lake-M",     ich5_get_smb, ich5_read_spd},
+
+     {0x8086, 0x8119, "Intel US15W",            us15w_get_smb, us15w_read_spd},
+
+     // AMD SMBUS
+     {0x1002, 0x4385, "AMD SB600/700",          piix4_get_smb, ich5_read_spd},
+     {0x1022, 0x780B, "AMD SB800/900",          sb800_get_smb, ich5_read_spd},
+
+     {0, 0, "", NULL, NULL}
+
+     // NOTE: Linux PCI IDs list / web site and Linux source code (drivers/i2c/busses/i2c*.c)
+     // contain other SMBus controller models from AMD / Hygon, SiS, Nvidia, Intel
+     // not supported by this code.
+/*
+     1002:4353 AMD SB200 SMBus Controller
+     1002:4363 AMD SB300 SMBus Controller
+     1002:4372 AMD IXP SB4x0 SMBus Controller
+
+     1022:13e7 AMD Ariel SMBus Controller
+     1022:746a AMD AMD-8111 SMBus 2.0
+     1022:790b AMD FCH SMBus Controller
+
+     1039:0016 Silicon Integrated Systems [SiS] SiS961/2/3 SMBus controller
+
+     10de:0034 Nvidia MCP04 SMBus
+     10de:0052 Nvidia CK804 SMBus
+     10de:0064 Nvidia nForce2 SMBus (MCP)
+     10de:0084 Nvidia MCP2A SMBus
+     10de:00d4 Nvidia nForce3 SMBus
+
+     10de:0264 Nvidia MCP51 SMBus
+     10de:0368 Nvidia MCP55 SMBus Controller
+     10de:03eb Nvidia MCP61 SMBus
+     10de:0446 Nvidia MCP65 SMBus
+     10de:0542 Nvidia MCP67 SMBus
+
+    (10de:0752 Nvidia MCP78S [GeForce 8200] SMBus - maybe irrelevant)
+     10de:07d8 Nvidia MCP73 SMBus
+     10de:0aa2 Nvidia MCP79 SMBus
+     10de:0d79 Nvidia MCP89 SMBus
+
+     1d94:790b Chengdu Haiguang IC Design Co., Ltd. (Hygon) FCH SMBus Controller
+
+     8086:0c59 Intel Atom Processor S1200 SMBus 2.0 Controller 0 - ?
+     8086:0c5a Intel Atom Processor S1200 SMBus 2.0 Controller 1 - ?
+     8086:0c5b Intel Atom Processor S1200 SMBus Controller 2 - ?
+     8086:0c5c Intel Atom Processor S1200 SMBus Controller 3 - ?
+     8086:0c5d Intel Atom Processor S1200 SMBus Controller 4 - ?
+     8086:0c5e Intel Atom Processor S1200 SMBus Controller 5 - ?
+    (8086:0f13 ValleyView SMBus Controller - unconfirmed)
+     8086:19ac Intel Atom Processor C3000 Series SMBus Contoller - Host - ?
+     8086:1f15 Intel Atom processor C2000 SMBus 2.0 - ?
+    (8086:1f3d Intel Atom Processor C2000 PECI SMBus - maybe irrelevant)
+     8086:7603 Intel 82372FB PIIX5 SMBus
+*/
 };
 
 
