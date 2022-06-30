@@ -338,6 +338,78 @@ void get_spd_spec(void)
     for (j = 0; j < 8; j++) {
 			if (smbcontrollers[index].read_spd(j) == 0) {
 				curcol = 1;
+				if(spd_raw[2] == 0x0c){
+				  // We are here if DDR4 present
+
+				  // First print slot#, module capacity
+					cprint(LINE_SPD+k, curcol, " - Slot   :");
+					dprint(LINE_SPD+k, curcol+8, k, 1, 0);
+
+					module_size = get_ddr4_module_size(spd_raw[4], spd_raw[6], spd_raw[12], spd_raw[13]);
+					temp_nbd = getnum(module_size); curcol += 12;
+					dprint(LINE_SPD+k, curcol, module_size, temp_nbd, 0); curcol += temp_nbd;
+					cprint(LINE_SPD+k, curcol, " MB"); curcol += 4;
+					tck = spd_raw[18];
+					// Then module jedec speed
+					switch(tck)
+					{
+						default:
+							cprint(LINE_SPD+k, curcol, "DDR4-????");
+							break;
+						case 0x0A:
+							cprint(LINE_SPD+k, curcol, "DDR4-1600");
+							break;
+						case 0x09:
+							cprint(LINE_SPD+k, curcol, "DDR4-1866");
+							break;
+						case 0x08:
+							cprint(LINE_SPD+k, curcol, "DDR4-2133");
+							break;
+						case 0x07:
+							cprint(LINE_SPD+k, curcol, "DDR4-2400");
+							break;
+						case 0x06:
+							cprint(LINE_SPD+k, curcol, "DDR4-2666");
+							break;
+						case 0x05:
+							cprint(LINE_SPD+k, curcol, "DDR4-3200");
+							break;
+						}
+
+					curcol += 10;
+
+					if((spd_raw[13] >> 3) == 1) { cprint(LINE_SPD+k, curcol, "ECC"); curcol += 4; }
+
+					// Then print module infos (manufacturer & part number)
+					spd_raw[320] &= 0x0F; // Parity odd or even
+					for (i = 0; jep106[i].cont_code < 9; i++) {
+			    		    if (spd_raw[320] == jep106[i].cont_code && spd_raw[321] == jep106[i].hex_byte) {
+			    		    // We are here if a Jedec manufacturer is detected
+							cprint(LINE_SPD+k, curcol, "-"); curcol += 2;
+							cprint(LINE_SPD+k, curcol, jep106[i].name);
+							for(z = 0; jep106[i].name[z] != '\0'; z++) { curcol++; }
+							curcol++;
+							// Display module serial number
+							for (h = 325; h < 328; h++) {
+								cprint(LINE_SPD+k, curcol, convert_hex_to_char(spd_raw[h]));
+								curcol++;
+							}
+
+							// Detect Week and Year of Manufacturing (2004-2037 allowed)
+							if(curcol <= 72 && spd_raw[323] > 3 && spd_raw[323] < 38 && spd_raw[324] < 55)
+							{
+								cprint(LINE_SPD+k, curcol, "(W");
+								dprint(LINE_SPD+k, curcol+2, spd_raw[324], 2, 0);
+								if(spd_raw[121] < 10) { cprint(LINE_SPD+k, curcol+2, "0"); }
+								cprint(LINE_SPD+k, curcol+4, "'");
+								dprint(LINE_SPD+k, curcol+5, spd_raw[323], 2, 0);
+								if(spd_raw[120] < 10) { cprint(LINE_SPD+k, curcol+5, "0"); }
+								cprint(LINE_SPD+k, curcol+7, ")");
+								curcol += 9;
+							}
+					    }
+					}
+				}
 				if(spd_raw[2] == 0x0b){
 				  // We are here if DDR3 present
 
@@ -413,8 +485,8 @@ void get_spd_spec(void)
 								curcol++;
 							}
 
-							// Detect Week and Year of Manufacturing (Think to upgrade after 2015 !!!)
-							if(curcol <= 72 && spd_raw[120] > 3 && spd_raw[120] < 16 && spd_raw[121] < 55)
+							// Detect Week and Year of Manufacturing (2004-2037 allowed)
+							if(curcol <= 72 && spd_raw[120] > 3 && spd_raw[120] < 38 && spd_raw[121] < 55)
 							{
 								cprint(LINE_SPD+k, curcol, "(W");
 								dprint(LINE_SPD+k, curcol+2, spd_raw[121], 2, 0);
@@ -528,6 +600,22 @@ void show_spd(void)
     wait_keyup();
     exit_nowait:
     popdown(POP_SAVE_BUFFER_2);
+}
+
+int get_ddr4_module_size(int b4, int b6, int b12, int b13)
+{
+    // from i2c-tools
+    int sdram_width = 4 << (b12 & 0x07);
+    int ranks = ((b12 >> 3) & 0x07) + 1;
+    int signal_loading = b6 & 0x03;
+    int die_count = ((b6 >> 4) & 0x07) + 1;
+    int cap = (256 << (b4 & 0x0f)) / 8;
+    cap *= (8 << (b13 & 0x07)) / sdram_width;
+    cap *= ranks;
+
+    if (signal_loading == 0x02) cap *= die_count;
+
+    return cap;
 }
 
 int get_ddr3_module_size(int sdram_capacity, int prim_bus_width, int sdram_width, int ranks)

@@ -12,6 +12,7 @@
 void get_spd_spec(void);
 int get_ddr2_module_size(int rank_density_byte, int rank_num_byte);
 int get_ddr3_module_size(int sdram_capacity, int prim_bus_width, int sdram_width, int ranks);
+int get_ddr4_module_size(int b4, int b6, int b12, int b13);
 char* convert_hex_to_char(unsigned hex_org);
 void sb800_get_smb(void);
 
