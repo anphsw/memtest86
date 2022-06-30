@@ -55,6 +55,11 @@ This creates a file named "memtest.bin" which is a bootable image.  This
 image file may be copied to a floppy disk or may be loaded from a disk
 partition via Lilo or Grub image from a hard disk partition.
 
+  To test build in QEMU
+   1) Ensure QEMU is installed (apt-get install qemu)
+   2) run: qemu-system-i386 -smp 2 -m 256 -fda memtest.bin
+      To disable mouse grabbing in QEMU window press CTRL+ALT
+
   To create a Memtest86+ bootdisk
    1) Insert a blank write enabled floppy disk.
    2) As root, Type "make install"
