@@ -4,7 +4,7 @@
  * http://www.canardpc.com - http://www.memtest.org
  */
 
-#include "stdint.h" 
+#include "stdint.h"
 #include "test.h"
 #include "io.h"
 #include "pci.h"
@@ -26,7 +26,7 @@ extern void wait_keyup();
 int smbdev, smbfun;
 unsigned short smbusbase;
 unsigned char spd_raw[256];
-char s[] = {'/', 0, '-', 0, '\\', 0, '|', 0};	
+char s[] = {'/', 0, '-', 0, '\\', 0, '|', 0};
 
 static void ich5_get_smb(void)
 {
@@ -40,17 +40,17 @@ static void piix4_get_smb(void)
 {
     unsigned long x;
     int result;
-    
+
     result = pci_conf_read(0, smbdev, smbfun, 0x08, 1, &x);
-    
-    if(x < 0x40){   
+
+    if(x < 0x40){
  			// SB600/700
  			result = pci_conf_read(0, smbdev, smbfun, 0x90, 2, &x);
   		if (result == 0) smbusbase = (unsigned short) x & 0xFFFE;
   	} else {
   		// SB800
 			sb800_get_smb();
-  	} 	
+  	}
 }
 
 void sb800_get_smb(void)
@@ -70,11 +70,11 @@ void sb800_get_smb(void)
 		/* SMBus IO base is defined as {Smbus0AsfIoBase[7:0], 0x00} */
 		smbusbase = (lbyte & 0xF) << 8;
 	} else {
-		__outb(AMD_SMBUS_BASE_REG + 1, AMD_INDEX_IO_PORT);	
+		__outb(AMD_SMBUS_BASE_REG + 1, AMD_INDEX_IO_PORT);
 		lbyte = __inb(AMD_DATA_IO_PORT);
-		__outb(AMD_SMBUS_BASE_REG, AMD_INDEX_IO_PORT);	
+		__outb(AMD_SMBUS_BASE_REG, AMD_INDEX_IO_PORT);
 		hbyte = __inb(AMD_DATA_IO_PORT);
-		
+
 		smbusbase = lbyte;
 		smbusbase <<= 8;
 		smbusbase += hbyte;
@@ -161,7 +161,7 @@ static int us15w_read_spd(int dimmadr)
     }
     return 0;
 }
-    
+
 struct pci_smbus_controller {
     unsigned vendor;
     unsigned device;
@@ -292,7 +292,7 @@ int find_smb_controller(void)
 {
     int i = 0;
     unsigned long valuev, valued;
-    
+
     for (smbdev = 0; smbdev < 32; smbdev++) {
 			for (smbfun = 0; smbfun < 8; smbfun++) {
 		    pci_conf_read(0, smbdev, smbfun, 0, 2, &valuev);
@@ -305,7 +305,7 @@ int find_smb_controller(void)
 							}
 			    	}
 					}
-		    }	
+		    }
 			}
     }
     return -1;
@@ -324,8 +324,8 @@ void get_spd_spec(void)
     int tck;
 
     index = find_smb_controller();
-    
-    if (index == -1) 
+
+    if (index == -1)
     {
     	// Unknown SMBUS Controller, exit
 			return;
@@ -333,14 +333,14 @@ void get_spd_spec(void)
 
     smbcontrollers[index].get_adr();
 		cprint(LINE_SPD-2, 0, "Memory SPD Informations");
-		cprint(LINE_SPD-1, 0, "--------------------------");    
-		
+		cprint(LINE_SPD-1, 0, "--------------------------");
+
     for (j = 0; j < 8; j++) {
-			if (smbcontrollers[index].read_spd(j) == 0) {	
+			if (smbcontrollers[index].read_spd(j) == 0) {
 				curcol = 1;
 				if(spd_raw[2] == 0x0b){
 				  // We are here if DDR3 present
-				 
+
 				  // First print slot#, module capacity
 					cprint(LINE_SPD+k, curcol, " - Slot   :");
 					dprint(LINE_SPD+k, curcol+8, k, 1, 0);
@@ -349,21 +349,21 @@ void get_spd_spec(void)
 					temp_nbd = getnum(module_size); curcol += 12;
 					dprint(LINE_SPD+k, curcol, module_size, temp_nbd, 0); curcol += temp_nbd;
 					cprint(LINE_SPD+k, curcol, " MB"); curcol += 4;
-					
-					// If XMP is supported, check Tck in XMP reg					
+
+					// If XMP is supported, check Tck in XMP reg
 					if(spd_raw[176] == 0x0C && spd_raw[177] == 0x4A && spd_raw[12])
 						{
 							tck = spd_raw[186];
 						} else {
 							tck = spd_raw[12];
 						}
-					
+
 					// Then module jedec speed
 					switch(tck)
 					{
 						default:
 							cprint(LINE_SPD+k, curcol, "DDR3-????");
-							break;						
+							break;
 						case 20:
 							cprint(LINE_SPD+k, curcol, "DDR3-800");
 							curcol--;
@@ -393,49 +393,49 @@ void get_spd_spec(void)
 							cprint(LINE_SPD+k, curcol, "DDR3-2666");
 							break;
 						}
-					
+
 					curcol += 10;
-					
+
 					if((spd_raw[8] >> 3) == 1) { cprint(LINE_SPD+k, curcol, "ECC"); curcol += 4; }
-					
-					// Then print module infos (manufacturer & part number)	
+
+					// Then print module infos (manufacturer & part number)
 					spd_raw[117] &= 0x0F; // Parity odd or even
-					for (i = 0; jep106[i].cont_code < 9; i++) {	
+					for (i = 0; jep106[i].cont_code < 9; i++) {
 			    	if (spd_raw[117] == jep106[i].cont_code && spd_raw[118] == jep106[i].hex_byte) {
 			    		// We are here if a Jedec manufacturer is detected
-							cprint(LINE_SPD+k, curcol, "-"); curcol += 2;							
+							cprint(LINE_SPD+k, curcol, "-"); curcol += 2;
 							cprint(LINE_SPD+k, curcol, jep106[i].name);
 							for(z = 0; jep106[i].name[z] != '\0'; z++) { curcol++; }
 							curcol++;
 							// Display module serial number
-							for (h = 128; h < 146; h++) {	
+							for (h = 128; h < 146; h++) {
 								cprint(LINE_SPD+k, curcol, convert_hex_to_char(spd_raw[h]));
-								curcol++;		
-							}			
+								curcol++;
+							}
 
 							// Detect Week and Year of Manufacturing (Think to upgrade after 2015 !!!)
 							if(curcol <= 72 && spd_raw[120] > 3 && spd_raw[120] < 16 && spd_raw[121] < 55)
 							{
-								cprint(LINE_SPD+k, curcol, "(W");	
+								cprint(LINE_SPD+k, curcol, "(W");
 								dprint(LINE_SPD+k, curcol+2, spd_raw[121], 2, 0);
 								if(spd_raw[121] < 10) { cprint(LINE_SPD+k, curcol+2, "0"); }
-								cprint(LINE_SPD+k, curcol+4, "'");	
+								cprint(LINE_SPD+k, curcol+4, "'");
 								dprint(LINE_SPD+k, curcol+5, spd_raw[120], 2, 0);
 								if(spd_raw[120] < 10) { cprint(LINE_SPD+k, curcol+5, "0"); }
-								cprint(LINE_SPD+k, curcol+7, ")");	
+								cprint(LINE_SPD+k, curcol+7, ")");
 								curcol += 9;
-							}															
-															
+							}
+
 							// Detect XMP Memory
 							if(spd_raw[176] == 0x0C && spd_raw[177] == 0x4A)
 								{
-									cprint(LINE_SPD+k, curcol, "*XMP*");					
+									cprint(LINE_SPD+k, curcol, "*XMP*");
 								}
 			    	}
-					}		
+					}
 				}
 			// We enter this function if DDR2 is detected
-			if(spd_raw[2] == 0x08){				
+			if(spd_raw[2] == 0x08){
 					 // First print slot#, module capacity
 					cprint(LINE_SPD+k, curcol, " - Slot   :");
 					dprint(LINE_SPD+k, curcol+8, k, 1, 0);
@@ -443,49 +443,49 @@ void get_spd_spec(void)
 					module_size = get_ddr2_module_size(spd_raw[31], spd_raw[5]);
 					temp_nbd = getnum(module_size); curcol += 12;
 					dprint(LINE_SPD+k, curcol, module_size, temp_nbd, 0); curcol += temp_nbd;
-					cprint(LINE_SPD+k, curcol, " MB"); curcol += 4;		
+					cprint(LINE_SPD+k, curcol, " MB"); curcol += 4;
 
 					// Then module jedec speed
 					float ddr2_speed, byte1, byte2;
-					
+
 					byte1 = (spd_raw[9] >> 4) * 10;
 					byte2 = spd_raw[9] & 0xF;
-					
+
 					ddr2_speed = 1 / (byte1 + byte2) * 10000 * 2;
 
 					temp_nbd = getnum(ddr2_speed);
-					cprint(LINE_SPD+k, curcol, "DDR2-"); curcol += 5;	 
+					cprint(LINE_SPD+k, curcol, "DDR2-"); curcol += 5;
 					dprint(LINE_SPD+k, curcol, ddr2_speed, temp_nbd, 0); curcol += temp_nbd;
 
 					if((spd_raw[11] >> 1) == 1) { cprint(LINE_SPD+k, curcol+1, "ECC"); curcol += 4; }
-			
-					// Then print module infos (manufacturer & part number)	
+
+					// Then print module infos (manufacturer & part number)
 					int ccode = 0;
-					
+
 					for(i = 64; i < 72; i++)
 					{
-						if(spd_raw[i] == 0x7F) { ccode++; }			
+						if(spd_raw[i] == 0x7F) { ccode++; }
 					}
-					
+
 					curcol++;
-					
-					for (i = 0; jep106[i].cont_code < 9; i++) {	
+
+					for (i = 0; jep106[i].cont_code < 9; i++) {
 			    	if (ccode == jep106[i].cont_code && spd_raw[64+ccode] == jep106[i].hex_byte) {
 			    		// We are here if a Jedec manufacturer is detected
-							cprint(LINE_SPD+k, curcol, "-"); curcol += 2;							
+							cprint(LINE_SPD+k, curcol, "-"); curcol += 2;
 							cprint(LINE_SPD+k, curcol, jep106[i].name);
 							for(z = 0; jep106[i].name[z] != '\0'; z++) { curcol++; }
 							curcol++;
 							// Display module serial number
-							for (h = 73; h < 91; h++) {	
+							for (h = 73; h < 91; h++) {
 								cprint(LINE_SPD+k, curcol, convert_hex_to_char(spd_raw[h]));
-								curcol++;		
-							}			
-															
-			    	}
-					}				
+								curcol++;
+							}
 
-				}	
+			    	}
+					}
+
+				}
 			k++;
 			}
     }
@@ -533,7 +533,7 @@ void show_spd(void)
 int get_ddr3_module_size(int sdram_capacity, int prim_bus_width, int sdram_width, int ranks)
 {
 	int module_size;
-	
+
 	switch(sdram_capacity)
 	{
 		case 0:
@@ -541,27 +541,27 @@ int get_ddr3_module_size(int sdram_capacity, int prim_bus_width, int sdram_width
 			break;
 		case 1:
 			module_size = 512;
-			break;		
+			break;
 		default:
 		case 2:
 			module_size = 1024;
-			break;		
+			break;
 		case 3:
 			module_size = 2048;
 			break;
 		case 4:
 			module_size = 4096;
-			break;		
+			break;
 		case 5:
 			module_size = 8192;
-			break;	
+			break;
 		case 6:
-			module_size = 16384;		
-			break;		
+			module_size = 16384;
+			break;
 		}
-		
+
 		module_size /= 8;
-	
+
 	switch(prim_bus_width)
 	{
 		case 0:
@@ -569,15 +569,15 @@ int get_ddr3_module_size(int sdram_capacity, int prim_bus_width, int sdram_width
 			break;
 		case 1:
 			module_size *= 16;
-			break;		
+			break;
 		case 2:
 			module_size *= 32;
-			break;		
+			break;
 		case 3:
 			module_size *= 64;
-			break;		
-		}		
-	
+			break;
+		}
+
 		switch(sdram_width)
 	{
 		case 0:
@@ -585,18 +585,18 @@ int get_ddr3_module_size(int sdram_capacity, int prim_bus_width, int sdram_width
 			break;
 		case 1:
 			module_size /= 8;
-			break;		
+			break;
 		case 2:
 			module_size /= 16;
-			break;		
+			break;
 		case 3:
 			module_size /= 32;
-			break;		
+			break;
 
-		}	
-	
+		}
+
 	module_size *= (ranks + 1);
-	
+
 	return module_size;
 }
 
@@ -604,7 +604,7 @@ int get_ddr3_module_size(int sdram_capacity, int prim_bus_width, int sdram_width
 int get_ddr2_module_size(int rank_density_byte, int rank_num_byte)
 {
 	int module_size;
-	
+
 	switch(rank_density_byte)
 	{
 		case 1:
@@ -612,32 +612,32 @@ int get_ddr2_module_size(int rank_density_byte, int rank_num_byte)
 			break;
 		case 2:
 			module_size = 2048;
-			break;		
+			break;
 		case 4:
 			module_size = 4096;
-			break;		
+			break;
 		case 8:
 			module_size = 8192;
-			break;		
+			break;
 		case 16:
 			module_size = 16384;
 			break;
 		case 32:
 			module_size = 128;
-			break;		
+			break;
 		case 64:
 			module_size = 256;
-			break;		
+			break;
 		default:
 		case 128:
 			module_size = 512;
-			break;	
-		}	
-		
+			break;
+		}
+
 	module_size *= (rank_num_byte & 7) + 1;
-	
+
 	return module_size;
-		
+
 }
 
 
