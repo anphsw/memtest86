@@ -25,7 +25,8 @@ extern void wait_keyup();
 
 int smbdev, smbfun;
 unsigned short smbusbase;
-unsigned char spd_raw[256];
+#define SPD_MAX 512
+unsigned char spd_raw[SPD_MAX];
 char s[] = {'/', 0, '-', 0, '\\', 0, '|', 0};
 
 static void ich5_get_smb(void)
@@ -46,9 +47,9 @@ static void piix4_get_smb(void)
     if(x < 0x40){
  			// SB600/700
  			result = pci_conf_read(0, smbdev, smbfun, 0x90, 2, &x);
-  		if (result == 0) smbusbase = (unsigned short) x & 0xFFFE;
+  			if (result == 0) smbusbase = (unsigned short) x & 0xFFFE;
   	} else {
-  		// SB800
+  			// SB800
 			sb800_get_smb();
   	}
 }
@@ -111,7 +112,7 @@ static int ich5_read_spd(int dimmadr)
     int x;
     spd_raw[0] = ich5_smb_read_byte(0x50 + dimmadr, 0);
     if (spd_raw[0] == 0xff)	return -1;		// no spd here
-    for (x = 1; x < 256; x++) {
+    for (x = 1; x < SPD_MAX; x++) {
 			spd_raw[x] = ich5_smb_read_byte(0x50 + dimmadr, (unsigned char) x);
     }
     return 0;
@@ -156,7 +157,7 @@ static int us15w_read_spd(int dimmadr)
     int x;
     spd_raw[0] = us15w_smb_read_byte(0x50 + dimmadr, 0);
     if (spd_raw[0] == 0xff)	return -1;		// no spd here
-    for (x = 1; x < 256; x++) {
+    for (x = 1; x < SPD_MAX; x++) {
 	spd_raw[x] = us15w_smb_read_byte(0x50 + dimmadr, (unsigned char) x);
     }
     return 0;
@@ -315,20 +316,25 @@ int find_smb_controller(void)
 
 void get_spd_spec(void)
 {
-	  int index;
+    int index;
     int h, i, j, z;
     int k = 0;
-    int module_size;
+    int module_size = 0, module_speed = 0, module_ecc = 0;
+    int module_prod_week = 0, module_prod_year = 0;
     int curcol;
+    int spd_type;
     int temp_nbd;
     int tck;
+    int mem_type_len = 0;
+    char mem_type[16] = { 0 };
 
     index = find_smb_controller();
 
     if (index == -1)
     {
     	// Unknown SMBUS Controller, exit
-			return;
+	cprint(LINE_SPD-2, 0, "SMBus Controller not known");
+	return;
     }
 
     smbcontrollers[index].get_adr();
@@ -337,48 +343,48 @@ void get_spd_spec(void)
 
     for (j = 0; j < 8; j++) {
 			if (smbcontrollers[index].read_spd(j) == 0) {
-				curcol = 1;
-				if(spd_raw[2] == 0x0c){
-				  // We are here if DDR4 present
+			    curcol = 1;
+			    // First print slot#, module capacity
+			    cprint(LINE_SPD+k, curcol, " - Slot   :");
+			    dprint(LINE_SPD+k, curcol+8, k, 1, 0);
 
-				  // First print slot#, module capacity
-					cprint(LINE_SPD+k, curcol, " - Slot   :");
-					dprint(LINE_SPD+k, curcol+8, k, 1, 0);
+			    spd_type = spd_raw[2];
+
+			    switch (spd_type) {
+				case 0x0c: //DDR4
+				case 0x0e: //DDR4E
+					mem_type_len = 4;
+					memcpy(mem_type, "DDR4", mem_type_len);
 
 					module_size = get_ddr4_module_size(spd_raw[4], spd_raw[6], spd_raw[12], spd_raw[13]);
-					temp_nbd = getnum(module_size); curcol += 12;
-					dprint(LINE_SPD+k, curcol, module_size, temp_nbd, 0); curcol += temp_nbd;
-					cprint(LINE_SPD+k, curcol, " MB"); curcol += 4;
 					tck = spd_raw[18];
-					// Then module jedec speed
+
 					switch(tck)
 					{
 						default:
-							cprint(LINE_SPD+k, curcol, "DDR4-????");
+							module_speed = 0;
 							break;
 						case 0x0A:
-							cprint(LINE_SPD+k, curcol, "DDR4-1600");
+							module_speed = 1600;
 							break;
 						case 0x09:
-							cprint(LINE_SPD+k, curcol, "DDR4-1866");
+							module_speed = 1866;
 							break;
 						case 0x08:
-							cprint(LINE_SPD+k, curcol, "DDR4-2133");
+							module_speed = 2133;
 							break;
 						case 0x07:
-							cprint(LINE_SPD+k, curcol, "DDR4-2400");
+							module_speed = 2400;
 							break;
 						case 0x06:
-							cprint(LINE_SPD+k, curcol, "DDR4-2666");
+							module_speed = 2666;
 							break;
 						case 0x05:
-							cprint(LINE_SPD+k, curcol, "DDR4-3200");
+							module_speed = 3200;
 							break;
-						}
+					}
 
-					curcol += 10;
-
-					if((spd_raw[13] >> 3) == 1) { cprint(LINE_SPD+k, curcol, "ECC"); curcol += 4; }
+					module_ecc = spd_raw[13] >> 3;
 
 					// Then print module infos (manufacturer & part number)
 					spd_raw[320] &= 0x0F; // Parity odd or even
@@ -395,32 +401,16 @@ void get_spd_spec(void)
 								curcol++;
 							}
 
-							// Detect Week and Year of Manufacturing (2004-2037 allowed)
-							if(curcol <= 72 && spd_raw[323] > 3 && spd_raw[323] < 38 && spd_raw[324] < 55)
-							{
-								cprint(LINE_SPD+k, curcol, "(W");
-								dprint(LINE_SPD+k, curcol+2, spd_raw[324], 2, 0);
-								if(spd_raw[121] < 10) { cprint(LINE_SPD+k, curcol+2, "0"); }
-								cprint(LINE_SPD+k, curcol+4, "'");
-								dprint(LINE_SPD+k, curcol+5, spd_raw[323], 2, 0);
-								if(spd_raw[120] < 10) { cprint(LINE_SPD+k, curcol+5, "0"); }
-								cprint(LINE_SPD+k, curcol+7, ")");
-								curcol += 9;
-							}
+							module_prod_year = spd_raw[323];
+							module_prod_week = spd_raw[324];
 					    }
 					}
-				}
-				if(spd_raw[2] == 0x0b){
-				  // We are here if DDR3 present
-
-				  // First print slot#, module capacity
-					cprint(LINE_SPD+k, curcol, " - Slot   :");
-					dprint(LINE_SPD+k, curcol+8, k, 1, 0);
+				break;
+				case 0x0b: // DDR3
+					mem_type_len = 4;
+					memcpy(mem_type, "DDR3", mem_type_len);
 
 					module_size = get_ddr3_module_size(spd_raw[4] & 0xF, spd_raw[8] & 0x7, spd_raw[7] & 0x7, spd_raw[7] >> 3);
-					temp_nbd = getnum(module_size); curcol += 12;
-					dprint(LINE_SPD+k, curcol, module_size, temp_nbd, 0); curcol += temp_nbd;
-					cprint(LINE_SPD+k, curcol, " MB"); curcol += 4;
 
 					// If XMP is supported, check Tck in XMP reg
 					if(spd_raw[176] == 0x0C && spd_raw[177] == 0x4A && spd_raw[12])
@@ -430,45 +420,40 @@ void get_spd_spec(void)
 							tck = spd_raw[12];
 						}
 
-					// Then module jedec speed
 					switch(tck)
 					{
 						default:
-							cprint(LINE_SPD+k, curcol, "DDR3-????");
+							module_speed = 0;
 							break;
 						case 20:
-							cprint(LINE_SPD+k, curcol, "DDR3-800");
-							curcol--;
+							module_speed = 800;
 							break;
 						case 15:
-							cprint(LINE_SPD+k, curcol, "DDR3-1066");
+							module_speed = 1066;
 							break;
 						case 12:
-							cprint(LINE_SPD+k, curcol, "DDR3-1333");
+							module_speed = 1333;
 							break;
 						case 10:
-							cprint(LINE_SPD+k, curcol, "DDR3-1600");
+							module_speed = 1600;
 							break;
 						case 9:
-							cprint(LINE_SPD+k, curcol, "DDR3-1866");
+							module_speed = 1866;
 							break;
 						case 8:
-							cprint(LINE_SPD+k, curcol, "DDR3-2133");
+							module_speed = 2133;
 							break;
 						case 7:
-							cprint(LINE_SPD+k, curcol, "DDR3-2400");
+							module_speed = 2400;
 							break;
 						case 6:
-							cprint(LINE_SPD+k, curcol, "DDR3-2533");
+							module_speed = 2533;
 							break;
 						case 5:
-							cprint(LINE_SPD+k, curcol, "DDR3-2666");
+							module_speed = 2666;
 							break;
-						}
-
-					curcol += 10;
-
-					if((spd_raw[8] >> 3) == 1) { cprint(LINE_SPD+k, curcol, "ECC"); curcol += 4; }
+					}
+					module_ecc = spd_raw[8] >> 3;
 
 					// Then print module infos (manufacturer & part number)
 					spd_raw[117] &= 0x0F; // Parity odd or even
@@ -485,18 +470,8 @@ void get_spd_spec(void)
 								curcol++;
 							}
 
-							// Detect Week and Year of Manufacturing (2004-2037 allowed)
-							if(curcol <= 72 && spd_raw[120] > 3 && spd_raw[120] < 38 && spd_raw[121] < 55)
-							{
-								cprint(LINE_SPD+k, curcol, "(W");
-								dprint(LINE_SPD+k, curcol+2, spd_raw[121], 2, 0);
-								if(spd_raw[121] < 10) { cprint(LINE_SPD+k, curcol+2, "0"); }
-								cprint(LINE_SPD+k, curcol+4, "'");
-								dprint(LINE_SPD+k, curcol+5, spd_raw[120], 2, 0);
-								if(spd_raw[120] < 10) { cprint(LINE_SPD+k, curcol+5, "0"); }
-								cprint(LINE_SPD+k, curcol+7, ")");
-								curcol += 9;
-							}
+							module_prod_year = spd_raw[120];
+							module_prod_week = spd_raw[121];
 
 							// Detect XMP Memory
 							if(spd_raw[176] == 0x0C && spd_raw[177] == 0x4A)
@@ -505,17 +480,12 @@ void get_spd_spec(void)
 								}
 			    	}
 					}
-				}
-			// We enter this function if DDR2 is detected
-			if(spd_raw[2] == 0x08){
-					 // First print slot#, module capacity
-					cprint(LINE_SPD+k, curcol, " - Slot   :");
-					dprint(LINE_SPD+k, curcol+8, k, 1, 0);
+				break;
+				case 0x08: //DDR2
+					mem_type_len = 4;
+					memcpy(mem_type, "DDR2", mem_type_len);
 
 					module_size = get_ddr2_module_size(spd_raw[31], spd_raw[5]);
-					temp_nbd = getnum(module_size); curcol += 12;
-					dprint(LINE_SPD+k, curcol, module_size, temp_nbd, 0); curcol += temp_nbd;
-					cprint(LINE_SPD+k, curcol, " MB"); curcol += 4;
 
 					// Then module jedec speed
 					float ddr2_speed, byte1, byte2;
@@ -525,11 +495,8 @@ void get_spd_spec(void)
 
 					ddr2_speed = 1 / (byte1 + byte2) * 10000 * 2;
 
-					temp_nbd = getnum(ddr2_speed);
-					cprint(LINE_SPD+k, curcol, "DDR2-"); curcol += 5;
-					dprint(LINE_SPD+k, curcol, ddr2_speed, temp_nbd, 0); curcol += temp_nbd;
-
-					if((spd_raw[11] >> 1) == 1) { cprint(LINE_SPD+k, curcol+1, "ECC"); curcol += 4; }
+					module_speed = ddr2_speed;
+					module_ecc = spd_raw[11] >> 1;
 
 					// Then print module infos (manufacturer & part number)
 					int ccode = 0;
@@ -557,7 +524,42 @@ void get_spd_spec(void)
 			    	}
 					}
 
-				}
+				break;
+				default:
+					mem_type_len = 0;
+					cprint(LINE_SPD+k, curcol, "Unknown type "); curcol += 13;
+					temp_nbd = getnum(spd_type);
+					dprint(LINE_SPD+k, curcol, spd_type, temp_nbd, 0); curcol += temp_nbd;
+				break;
+			    }
+
+			    if(mem_type_len) {
+					// module size
+					temp_nbd = getnum(module_size);
+					dprint(LINE_SPD+k, curcol, module_size, temp_nbd, 0); curcol += temp_nbd;
+					cprint(LINE_SPD+k, curcol, " MB"); curcol += 4;
+
+					// module RAM type
+					cprint(LINE_SPD+k, curcol, mem_type); curcol += mem_type_len;
+					cprint(LINE_SPD+k, curcol, "-"); curcol += 1;
+
+					temp_nbd = getnum(module_speed);
+					dprint(LINE_SPD+k, curcol, module_speed, temp_nbd, 0); curcol += temp_nbd + 1;
+					if(module_ecc == 1) { cprint(LINE_SPD+k, curcol, "ECC"); curcol += 4; }
+			    }
+
+			    if (curcol <= 72 && module_prod_year > 3) {
+					// production year and week
+					cprint(LINE_SPD+k, curcol, "(W");
+					dprint(LINE_SPD+k, curcol+2, module_prod_week, 2, 0);
+					if(module_prod_week < 10) { cprint(LINE_SPD+k, curcol+2, "0"); }
+					cprint(LINE_SPD+k, curcol+4, "'");
+					dprint(LINE_SPD+k, curcol+5, module_prod_year, 2, 0);
+					if(module_prod_year < 10) { cprint(LINE_SPD+k, curcol+5, "0"); }
+					cprint(LINE_SPD+k, curcol+7, ")");
+					curcol += 9;
+			    }
+
 			k++;
 			}
     }
@@ -581,10 +583,30 @@ void show_spd(void)
     for (j = 0; j < 16; j++) {
 	if (smbcontrollers[index].read_spd(j) == 0) {
 	    popclear(POP_SAVE_BUFFER_2);
-	    cprint(POP2_Y, POP2_X + 1, "SPD Data: Slot");
+	    cprint(POP2_Y, POP2_X + 1, "SPD Data: Slot ");
 	    dprint(POP2_Y, POP2_X + 15, j, 2, 0);
-    	    for (i = 0; i < 256; i++) {
-		hprint2(2 + POP2_Y + i / 16, 3 + POP2_X + (i % 16) * 3, spd_raw[i], 2);
+
+	    int dump_line, dump_line_fix = 0;
+    	    for (i = 0; i < SPD_MAX; i++) {
+		dump_line = i / 16;
+		dump_line -= dump_line_fix;
+
+		// print address on every line
+		if (!(i % 16)) {
+		    cprint(POP2_Y + dump_line + 3, POP2_X + 4, "0x");
+		    hprint2(POP2_Y + dump_line + 3, POP2_X + 6, i, 4);
+		}
+		hprint2(POP2_Y + dump_line + 3, 14 + POP2_X + (i % 16) * 3, spd_raw[i], 2);
+
+		// refresh screen every 16 lines
+		if (dump_line == 16 && (i % 16) == 15) {
+		    dump_line_fix += 16;
+		    while (!get_key());
+		    wait_keyup();
+		    popclear(POP_SAVE_BUFFER_2);
+		    cprint(POP2_Y, POP2_X + 1, "SPD Data: Slot ");
+		    dprint(POP2_Y, POP2_X + 15, j, 2, 0);
+		}
 	    }
 	    data++;
 	    while (!get_key());

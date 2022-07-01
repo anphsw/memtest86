@@ -147,6 +147,10 @@ void print_cpu_line(float dram_freq, float fsb_freq, int ram_type)
 			cprint(LINE_CPU, cur_col, "DDR3-");
 			cur_col += 5;
 			break;	
+		case 4:
+			cprint(LINE_CPU, cur_col, "DDR4-");
+			cur_col += 5;
+			break;	
 	}		
 
 	if(dram_freq < 500)
